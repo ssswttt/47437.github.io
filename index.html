@@ -1,122 +1,25 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人介绍</title>
-    <!-- 引入Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入Font Awesome -->
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <title>带颜色的居中文字</title>
+    <style>
+        body {
+            /* 让文字在页面中水平和垂直居中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .colored-text {
+            color: #ff0000; /* 红色 */
+            font-size: 24px;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans">
-    <!-- 导航栏 -->
-    <nav class="bg-white shadow-sm fixed w-full z-10">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="#" class="text-xl font-bold text-blue-600">个人主页</a>
-            <div class="hidden md:flex space-x-6">
-                <a href="#about" class="hover:text-blue-600">关于我</a>
-                <a href="#skills" class="hover:text-blue-600">技能</a>
-                <a href="#contact" class="hover:text-blue-600">联系我</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- 英雄区域 -->
-    <header class="pt-24 pb-16 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 mb-8 md:mb-0">
-                    <h1 class="text-3xl md:text-4xl font-bold mb-4">你好，我是张小明</h1>
-                    <p class="text-gray-600 mb-6">一名热爱编程的前端开发者</p>
-                    <a href="#contact" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">联系我</a>
-                </div>
-                <div class="md:w-1/2">
-                    <img src="https://picsum.photos/seed/profile/200/200" alt="个人照片" class="w-40 h-40 rounded-full mx-auto border-4 border-white shadow-md">
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- 关于我 -->
-    <section id="about" class="py-16 bg-white">
-        <div class="container mx-auto px-4 max-w-3xl">
-            <h2 class="text-2xl font-bold mb-6 text-center">关于我</h2>
-            <p class="text-gray-700 mb-4">
-                我是一名拥有3年前端开发经验的程序员，专注于创建用户友好的网站和应用。
-            </p>
-            <p class="text-gray-700">
-                我熟悉HTML、CSS和JavaScript等前端技术，热衷于学习新技术和提升用户体验。
-            </p>
-        </div>
-    </section>
-
-    <!-- 技能 -->
-    <section id="skills" class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4 max-w-3xl">
-            <h2 class="text-2xl font-bold mb-8 text-center">我的技能</h2>
-            <div class="space-y-4">
-                <div>
-                    <div class="flex justify-between mb-1">
-                        <span>HTML5 & CSS3</span>
-                        <span>90%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: 90%"></div>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-1">
-                        <span>JavaScript</span>
-                        <span>85%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: 85%"></div>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-1">
-                        <span>React</span>
-                        <span>80%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: 80%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 联系我 -->
-    <section id="contact" class="py-16 bg-white">
-        <div class="container mx-auto px-4 max-w-3xl">
-            <h2 class="text-2xl font-bold mb-8 text-center">联系我</h2>
-            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-                <form>
-                    <div class="mb-4">
-                        <label class="block mb-2">姓名</label>
-                        <input type="text" class="w-full p-2 border border-gray-300 rounded">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block mb-2">邮箱</label>
-                        <input type="email" class="w-full p-2 border border-gray-300 rounded">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block mb-2">消息</label>
-                        <textarea class="w-full p-2 border border-gray-300 rounded" rows="4"></textarea>
-                    </div>
-                    <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">发送</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- 页脚 -->
-    <footer class="bg-gray-800 text-white py-6">
-        <div class="container mx-auto px-4 text-center">
-            <p>© 2023 个人主页. 保留所有权利.</p>
-        </div>
-    </footer>
+<body>
+    <div class="colored-text">这是带颜色且居中的文字</div>
 </body>
 </html>
     
