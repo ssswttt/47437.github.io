@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能进阶学习板块</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    /* 页面特定微调 */
+    .page-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .page-hero h1 { font-size: 28px; font-weight: 800; }
+    .page-hero p { color: #7f8c8d; }
+    .actions { display: flex; align-items: center; gap: 12px; }
+    .result-box { white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 14px; line-height: 1.6; background: rgba(255,255,255,0.92); border-radius: 12px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.06); }
+    .hint { color: #7f8c8d; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo" style="font-weight:800; display:flex; align-items:center; gap:10px;">
+        <span>🧠</span>
+        <span>智能进阶学习</span>
+      </div>
+      <nav class="nav">
+        <a href="home.html">首页</a>
+        <a href="souti.html">灵感搜题</a>
+        <a href="login.html">登录</a>
+      </nav>
+    </header>
+
+    <section class="card" style="margin-top:20px;">
+      <div class="page-hero">
+        <div>
+          <h1>智能进阶学习板块</h1>
+          <p class="hint">输入一个知识点，我们将为你生成循序渐进的学习建议与资源。</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="knowledgeInput" class="label">知识点</label>
+        <textarea id="knowledgeInput" class="input" style="height: 110px; resize: vertical;" placeholder="例如：二次函数、牛顿运动定律、操作系统内存管理..."></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="askCoze()">获取智能学习方案</button>
+        <span id="loading" class="hint" style="display:none;">正在生成，请稍候...</span>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:20px;">
+      <div class="section-title" style="margin-bottom:10px;">
+        <span>学习建议</span>
+      </div>
+      <div id="result" class="result-box">（这里会显示AI返回的内容）</div>
+    </section>
+  </div>
+
+  <script>
+    async function askCoze() {
+      const userInput = document.getElementById("knowledgeInput").value.trim();
+      if (!userInput) {
+        alert("请输入一个知识点！");
+        return;
+      }
+
+      const url = "https://api.coze.cn/v1/workflow/stream_run";
+
+      const body = {
+        workflow_id: "7544937264335339563", 
+        app_id: "7538713082928562202",      
+        inputs: {
+          question: userInput
+        }
+      };
+
+      try {
+        document.getElementById("loading").style.display = "inline";
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer pat_Z6Rslhq4RGEvDyxSGcRjxIhk2aCsXVerWCHrHpqd95qhQXG42lnzb3L8t3tVFLjl",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+        document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        document.getElementById("result").textContent = "调用失败：" + error;
+      } finally {
+        document.getElementById("loading").style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>
