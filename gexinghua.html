@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- 内联CSS样式，替代原main.css -->
+  <style>
+    /* 让 html、body 占满整个视口高度，并清除默认边距 */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    /* 让 #app 容器占满父元素（body）的高度 */
+    #app {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>  
+  <!-- Coze Web SDK 渲染容器 -->
+  <div id='app'></div>
+
+  <!-- 1. 引入 Coze Web SDK（必须在初始化代码之前） -->
+  <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/builder-web-sdk/0.1.0/dist/umd/index.js"></script>
+  
+  <!-- 2. 初始化 Coze Web SDK -->
+  <script>
+    new CozeWebSDK.AppWebSDK({
+      token: 'pat_Z6Rslhq4RGEvDyxSGcRjxIhk2aCsXVerWCHrHpqd95qhQXG42lnzb3L8t3tVFLjl',
+      appId: '7553175330563899446',
+      container: '#app', // 绑定渲染容器
+      userInfo: {
+        id: 'user',
+        url: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/coze-logo.png',
+        nickname: 'User',
+      },
+      ui: {
+        className: '', // 可自定义UI类名（当前为空）
+      }
+    });
+  </script>
+</body>
+</html>

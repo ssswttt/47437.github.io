@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学伴智享空间 - 首页</title>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+            color: #3498db;
+        }
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .main-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #3498db;
+        }
+        
+        .main-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #3498db;
+            font-size: 28px;
+        }
+        
+        .section-content {
+            color: #555;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+            margin-top: 28px;
+        }
+        
+        .feature {
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            padding: 28px 30px;
+            border-radius: 18px;
+            min-height: 130px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.10);
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+            isolation: isolate;
+        }
+        
+        .feature:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 38px rgba(0, 0, 0, 0.14);
+            filter: brightness(1.03);
+        }
+
+        .feature::before {
+            content: "";
+            position: absolute;
+            inset: -30% -10% auto auto;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.45), rgba(255,255,255,0) 60%);
+            mix-blend-mode: soft-light;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .feature i {
+            color: #2c3e50;
+            font-size: 28px;
+            background: rgba(255,255,255,0.55);
+            border: 1px solid rgba(0,0,0,0.06);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+        
+        .feature span {
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            font-size: 20px;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+            z-index: 1;
+        }
+        
+       /* 学习工具板块卡片：调整为左深右浅渐变，优化色彩过渡 */
+/* 学习工具板块卡片：调整为左深右浅渐变，优化色彩过渡 */
+.feature:nth-child(1) { 
+    background: linear-gradient(90deg, #bee8c2 0%, #d4ebd9 50%, #ecffec 100%), 
+                radial-gradient(120px 120px at 80% -20%, rgba(255,255,255,0.5), transparent 60%); 
+} /* 情境式探索 - 绿色系 */
+
+.feature:nth-child(2) { 
+    background: linear-gradient(90deg, #eac4c0 0%, #f0d2ce 50%, #fae7e4 100%), 
+                radial-gradient(120px 120px at 80% -20%, rgba(255,255,255,0.5), transparent 60%); 
+} /* 讲学录 - 粉色系 */
+
+.feature:nth-child(3) { 
+    background: linear-gradient(90deg, #b6d7d0 0%, #d1e6df 50%, #eff8f5 100%), 
+                radial-gradient(120px 120px at 80% -20%, rgba(255,255,255,0.5), transparent 60%); 
+} /* 函数画板 - 青色系 */
+
+.feature:nth-child(4) { 
+    background: linear-gradient(90deg, #d3cbe5 0%, #e1dced 50%, #e3e0fc 100%), 
+                radial-gradient(120px 120px at 80% -20%, rgba(255,255,255,0.5), transparent 60%); 
+} /* 协作讨论 - 紫色系 */
+
+.feature:nth-child(5) { 
+    background: linear-gradient(90deg, #e6d0af 0%, #eadbc6 50%, #fcf5e8 100%), 
+                radial-gradient(120px 120px at 80% -20%, rgba(255,255,255,0.5), transparent 60%); 
+} /* 智能进阶 - 黄棕色系 */
+
+.feature:nth-child(6) { 
+    background: linear-gradient(90deg, #c4def0 0%, #d4e3ed 50%, #f3f8fc 100%), 
+                radial-gradient(120px 120px at 80% -20%, rgba(255,255,255,0.5), transparent 60%); 
+} /* 灵感搜题 - 蓝色系 */
+
+
+
+        @media (max-width: 900px) {
+            .features { grid-template-columns: 1fr; }
+        }
+        
+        .side-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .side-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #2ecc71;
+        }
+        
+        .side-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+        }
+        
+        .side-section:nth-child(1) {
+            border-left-color: #9b59b6;
+        }
+        
+        .side-section:nth-child(2) {
+            border-left-color: #2ecc71;
+        }
+        
+        .news-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        
+        .news-item:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+            padding-left: 10px;
+            border-radius: 8px;
+        }
+        
+        .news-title {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .news-time {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .daily-problem {
+            background: rgba(236, 240, 245, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+        
+        .problem-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .problem-content {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .problem-difficulty {
+            color: #e74c3c;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        
+        .problem-tags {
+            margin-bottom: 15px;
+        }
+        
+        .tag {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .solve-btn {
+            background-color: #3db971;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        
+        .solve-btn:hover {
+            background-color: #38905d;
+            transform: translateY(-1px);
+        }
+        
+        .notes-box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid #f39c12;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notes-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #f39c12;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #7f8c8d;
+            font-size: 16px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .logo {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .nav-links a {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-graduation-cap logo-icon"></i>
+                <div class="logo-text">学伴智享空间</div>
+            </div>
+            <!-- 导航栏新增「学伴心语」，与首页、数学自测并列 -->
+            <div class="nav-links">
+                <a href="#"><i class="fas fa-home"></i> 首页</a>
+                <a href="diaocha.html"><i class="fas fa-check-circle"></i> 数学自测</a>
+                <a href="peiban.html"><i class="fas fa-heart"></i> 学伴心语</a>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="main-section">
+                <div class="section-title">
+                    <i class="fas fa-tools"></i>
+                    <span>学习工具</span>
+                </div>
+                <div class="section-content">
+                    提供多种学习辅助工具，帮助学生更好地理解和掌握数学知识。
+                </div>
+                
+                <div class="features">
+                    <!-- 学习工具板块：删除原「学伴心语」卡片，保留6个工具卡片 -->
+                    <!-- 第一行：情境式探索、讲学录 -->
+                    <a class="feature" href="qingjing.html">
+                        <i class="fas fa-compass"></i>
+                        <span>数探谜案</span>
+                    </a>
+                    <a class="feature" href="boke.html">
+                        <i class="fas fa-podcast"></i>
+                        <span>讲学录</span>
+                    </a>
+                    <!-- 第二行：函数画板、协作讨论 -->
+                    <a class="feature" href="hanshu.html">
+                        <i class="fas fa-chart-line"></i>
+                        <span>函数画板</span>
+                    </a>
+                    <a class="feature" href="taolun.html">
+                        <i class="fas fa-comments"></i>
+                        <span>项目式教学</span>
+                    </a>
+                    <!-- 第三行：智能进阶、灵感搜题 -->
+                    <a class="feature" href="gexinghua.html">
+                        <i class="fas fa-user-cog"></i>
+                        <span>个性化练习</span>
+                    </a>
+                    <a class="feature" href="souti.html">
+                        <i class="fas fa-search"></i>
+                        <span>灵感搜题</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 右侧板块保持不变 -->
+            <div class="side-sections">
+                <div class="side-section">
+                    <div class="section-title">
+                        <i class="fas fa-question-circle"></i>
+                        <span>每日一题</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="daily-problem">
+                            <div class="problem-title">今日数学题</div>
+                            <div class="problem-content">
+                                已知函数 f(x) = x² - 2x + 3，求：
+                                <br>1. 函数的最小值
+                                <br>2. 当 x = 2 时的函数值
+                                <br>3. 函数的对称轴方程
+                            </div>
+                            <div class="problem-difficulty">难度：中等</div>
+                            <div class="problem-tags">
+                                <span class="tag">二次函数</span>
+                                <span class="tag">最值问题</span>
+                            </div>
+                            <button class="solve-btn">查看解析</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="side-section">
+                    <div class="section-title">
+                        <i class="fas fa-newspaper"></i>
+                        <span>最新数学资讯</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="news-item">
+                            <div class="news-title">国际数学奥林匹克竞赛结果公布</div>
+                            <div class="news-time">2025-09-12</div>
+                        </div>
+                        <div class="news-item">
+                            <div class="news-title">数学建模大赛获奖名单出炉</div>
+                            <div class="news-time">2025-09-21</div>
+                        </div>
+                        <div class="news-item">
+                            <div class="news-title">新高考数学改革政策解读</div>
+                            <div class="news-time">2025-09-20</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 学伴智享空间 | 让学习更高效、更智能</p>
+        </footer>
+    </div>
+
+    <script>
+        document.querySelectorAll('.side-section').forEach(section => {
+            section.addEventListener('click', function() {
+                const title = this.querySelector('.section-title span').textContent;
+                alert('即将跳转到：' + title);
+            });
+        });
+    </script>
+</body>
+</html>

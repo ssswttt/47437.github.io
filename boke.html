@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI播客</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 渐变背景样式 */
+        .gradient-bg {
+            background: linear-gradient(135deg, #758ce2 0%, #9469e0 100%);
+        }
+        
+        /* 图片切换动画 */
+        .img-slider {
+            transition: opacity 0.5s ease-in-out;
+        }
+        .img-hidden {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        /* 加载动画样式 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* 卡片阴影 */
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        /* 悬浮提升效果 */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 新增动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+        <!-- 头部标题 -->
+        <nav class="gradient-bg text-white p-4 shadow-lg">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-robot text-3xl"></i>
+                    <h1 class="text-2xl md:text-3xl font-bold">AI播客</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <span class="text-sm opacity-90">智能内容生成平台</span>
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- 功能介绍区域 -->
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-6 border-b">
+            <div class="flex items-center space-x-3 mb-3">
+                <i class="fas fa-magic text-purple-600 text-xl"></i>
+                <h2 class="text-xl font-semibold text-gray-800">功能特色</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-image text-blue-500"></i>
+                    <span>智能图片生成</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-music text-green-500"></i>
+                    <span>高质量音频合成</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-link text-purple-500"></i>
+                    <span>支持多种输入格式</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主体内容区：左右分栏（移动端上下堆叠） -->
+        <div class="flex flex-col md:flex-row">
+            <!-- 左侧：输入界面 -->
+            <div class="w-full md:w-1/3 p-4 md:p-6 border-b md:border-b-0 md:border-r border-gray-200">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">输入界面</h2>
+                <div class="space-y-4">
+                    <!-- 输入类型选择 -->
+                    <div>
+                        <label class="block text-gray-700 mb-3 font-bold">
+                            <i class="fas fa-clipboard-list mr-2 text-purple-500"></i>
+                            输入类型
+                        </label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="inputType" value="text" checked class="mr-2">文本
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="inputType" value="link" class="mr-2">链接
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- 输入内容区域 -->
+                    <div>
+                        <label for="inputContent" class="block text-gray-700 mb-2 font-bold">输入内容</label>
+                        <textarea 
+                            id="inputContent" 
+                            class="w-full h-32 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="请输入文本内容或粘贴链接（如图片链接、文档链接等）"
+                        ></textarea>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <button 
+                        id="submitBtn" 
+                        class="w-full bg-gradient-to-r from-blue-400 to-purple-500 text-white py-4 rounded-lg hover:from-blue-500 hover:to-purple-700 transition-all duration-300 font-medium text-lg shadow-lg hover-lift flex items-center justify-center space-x-2"
+                    >
+                        <i class="fas fa-paper-plane"></i>
+                        <span>开始生成</span>
+                    </button>
+
+                    <!-- 加载状态提示（默认隐藏） -->
+                    <div id="loading" class="hidden text-center">
+                        <div class="bg-white p-4 rounded-lg card-shadow">
+                            <div class="flex items-center justify-center space-x-3">
+                                <div class="spinner w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                                <span class="text-gray-600">AI正在努力生成中...</span>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>
+                                预计需要30-60秒，请耐心等待
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：输出界面（图片+音频） -->
+            <div class="w-full md:w-2/3 p-4 md:p-6">
+                <!-- 输出图片区域 -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">输出的图片</h2>
+                    <!-- 图片容器（带切换功能） -->
+                    <div id="imageContainer" class="relative w-full h-64 md:h-80 border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                        <!-- 默认提示图 -->
+                        <div id="defaultImage" class="absolute inset-0 flex items-center justify-center">
+                            <p class="text-gray-400">处理完成后将显示图片</p>
+                        </div>
+                        <!-- 动态生成的图片列表（默认隐藏） -->
+                        <div id="imageList" class="hidden relative w-full h-full"></div>
+                        <!-- 图片加载状态 -->
+                        <div id="imageLoading" class="hidden absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="spinner w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+                                <p class="text-gray-600">图片加载中...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 图片切换按钮（默认隐藏） -->
+                    <div id="imageControls" class="hidden flex justify-center gap-4 mt-4">
+                        <button id="prevImg" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">上一张</button>
+                        <span id="imgIndex" class="flex items-center text-gray-600">1/0</span>
+                        <button id="nextImg" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">下一张</button>
+                        <!-- 新增图片指示点 -->
+                        <div class="flex space-x-2" id="imageDots"></div>
+                    </div>
+                </div>
+
+                <!-- 输出音频区域 -->
+                <div>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">输出的音频</h2>
+                    <!-- 音频容器 -->
+                    <div class="w-full p-4 border border-gray-200 rounded-lg bg-gray-50">
+                        <audio id="audioPlayer" controls class="w-full">
+                            您的浏览器不支持音频播放，请更新浏览器版本。
+                        </audio>
+                        <!-- 音频链接显示 -->
+                        <div id="audioLinkContainer" class="mt-3 hidden">
+                            <label class="block text-gray-700 mb-1">音频链接：</label>
+                            <a id="audioLink" href="" target="_blank" class="text-blue-600 hover:underline break-all">点击查看音频源</a>
+                        </div>
+                        <!-- 新增音频信息 -->
+                        <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-clock"></i>
+                                <span id="audioDuration">--:--</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-volume-up"></i>
+                                <span>高质量音频</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const inputContent = document.getElementById('inputContent');
+        const inputTypeRadios = document.querySelectorAll('input[name="inputType"]');
+        const defaultImage = document.getElementById('defaultImage');
+        const imageList = document.getElementById('imageList');
+        const imageControls = document.getElementById('imageControls');
+        const prevImgBtn = document.getElementById('prevImg');
+        const nextImgBtn = document.getElementById('nextImg');
+        const imgIndexText = document.getElementById('imgIndex');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioLinkContainer = document.getElementById('audioLinkContainer');
+        const audioLink = document.getElementById('audioLink');
+        const audioDuration = document.getElementById('audioDuration');
+        const imageDots = document.getElementById('imageDots');
+        const imageLoading = document.getElementById('imageLoading');
+
+        // 新增格式化时间函数
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '--:--';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // 新增Toast通知函数
+        function showToast(message, type = 'success') {
+            // 创建Toast元素
+            const toast = document.createElement('div');
+            
+            // 根据类型设置样式
+            const bgColor = type === 'success' ? 'bg-green-500' : 
+                           type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            const iconClass = type === 'success' ? 'fa-check-circle' : 
+                             type === 'error' ? 'fa-times-circle' : 'fa-info-circle';
+            
+            toast.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center space-x-2 transform transition-all duration-300 opacity-0 translate-y-[-20px]`;
+            toast.innerHTML = `<i class="fas ${iconClass}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            
+            // 显示Toast
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+            }, 10);
+            
+            // 3秒后隐藏并移除
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 图片切换状态
+        let currentImgIndex = 0;
+        let imageUrls = [];
+
+        // API调用函数 - 使用SSE处理流式响应
+        async function callCozeAPI(inputData) {
+            // 修改这两行
+            const WORKFLOW_ID = "7553173636422058036";
+            const APP_ID = "7553122040766119971";
+            const PAT = "pat_Z6Rslhq4RGEvDyxSGcRjxIhk2aCsXVerWCHrHpqd95qhQXG42lnzb3L8t3tVFLjl";
+            
+            // 构造请求参数 - 修正为扁平化结构，符合工作流参数要求
+            const requestData = {
+                workflow_id: WORKFLOW_ID,
+                app_id: APP_ID,
+                parameters: {
+                    input: inputData.content || '', // 新增input字段，值与input_content相同
+                    input_content: inputData.content || '',
+                    input_type: inputData.type // 'text' 或 'link'
+                }
+            };
+        
+            console.log('API请求参数：', requestData);
+            
+            // 1. 超时放宽 - 统一设置为5分钟
+            const timeoutDuration = 300000;   // 5 分钟通用
+            console.log(`设置超时时间: ${timeoutDuration/1000}秒`);
+            
+            return new Promise((resolve, reject) => {
+                // 创建一个AbortController用于取消请求
+                const abortController = new AbortController();
+                const { signal } = abortController;
+                
+                // 结果数据收集
+                let resultData = { images: [], audio: "" };
+                
+                // 标记请求是否已完成，防止多次resolve/reject
+                let requestCompleted = false;
+                
+                // 2. 心跳逻辑相关变量
+                let lastPacketTime = Date.now();
+                const HEARTBEAT = 30000;         // 30 秒没数据就视为"死流"
+                let heartBeatTimer = null;
+                
+                // 定义timeoutId变量
+                let timeoutId = null;
+                
+                // 心跳检查函数
+                // 心跳检查函数 - 优化以避免过早中止
+                function heartBeatCheck() {
+                  if (Date.now() - lastPacketTime > HEARTBEAT) {
+                    console.warn('30 s 无数据，检查是否真的需要断开');
+                    // 不要立即abort，而是先尝试获取更多信息
+                    // 只有当请求仍在进行中时才继续检查
+                    if (!requestCompleted) {
+                      heartBeatTimer = setTimeout(heartBeatCheck, HEARTBEAT);
+                    }
+                    return;
+                  }
+                  if (!requestCompleted) {
+                      heartBeatTimer = setTimeout(heartBeatCheck, HEARTBEAT);
+                  }
+                }
+                
+                // 完成处理函数
+                function completeProcessing(success, data) {
+                    if (!requestCompleted) {
+                        requestCompleted = true;
+                        clearTimeout(timeoutId); // 清理超时计时器
+                        if (heartBeatTimer) clearTimeout(heartBeatTimer); // 清理心跳计时器
+                        if (success) {
+                            resolve(data);
+                        } else {
+                            reject(data);
+                        }
+                    }
+                }
+                
+                // 使用fetch实现POST方式的SSE客户端
+                fetch('https://api.coze.cn/v1/workflow/stream_run', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${PAT}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/event-stream'
+                    },
+                    body: JSON.stringify(requestData),
+                    signal
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`API错误：状态码${response.status}`);
+                    }
+                    
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    
+                    // 处理SSE事件流
+                    async function processStream() {
+                        try {
+                            const { done, value } = await reader.read();
+                            
+                            // 在收到数据后更新心跳时间
+                            if (value && value.length > 0) {
+                                lastPacketTime = Date.now();
+                            }
+                            
+                            if (done) {
+                                console.log('流式响应结束');
+                                completeProcessing(true, {
+                                    success: true,
+                                    images: resultData.images,
+                                    audio: resultData.audio
+                                });
+                                return;
+                            }
+                            
+                            // 解码接收到的字节
+                            const chunk = decoder.decode(value, { stream: true });
+                            console.log(`[${inputData.type}类型] 接收到的SSE数据块长度: ${chunk.length}字符`);
+                            
+                            // 分割并处理每个SSE事件
+                            const lines = chunk.split('\n');
+                            for (const line of lines) {
+                                const trimmedLine = line.trim();
+                                if (trimmedLine.startsWith('data:')) {
+                                    const data = trimmedLine.slice(5).trim();
+                                    if (data) {
+                                        try {
+                                            const jsonData = JSON.parse(data);
+                                            console.log(`[${inputData.type}类型] 解析到的流式数据:`, jsonData);
+                                               
+                                            // ✅ 重点：解析 content 字段
+                                            if (jsonData.content) {
+                                                try {
+                                                    const content = JSON.parse(jsonData.content);
+                                                      
+                                                    // ✅ 提取音频
+                                                    if (content.Group1) {
+                                                        resultData.audio = content.Group1;
+                                                    }
+                                                      
+                                                    // ✅ 提取图片（多个 URL 用逗号分隔）
+                                                    if (content.Group2) {
+                                                        if (typeof content.Group2 === 'string') {
+                                                            resultData.images = content.Group2.split(',').map(url => url.trim());
+                                                        } else if (Array.isArray(content.Group2)) {
+                                                            resultData.images = content.Group2.map(url => url.trim());
+                                                        } else {
+                                                            console.warn('Group2格式不支持，应为字符串或数组:', typeof content.Group2);
+                                                            resultData.images = [];
+                                                        }
+                                                    }
+                                                } catch (contentParseError) {
+                                                    console.warn('解析content字段失败:', contentParseError);
+                                                }
+                                            }
+                                            
+                                            // 检查是否是最后一条消息
+                                            if (jsonData.is_end || jsonData.event === 'done') {
+                                                console.log(`[${inputData.type}类型] 收到结束标志，完成处理`);
+                                                completeProcessing(true, {
+                                                    success: true,
+                                                    images: resultData.images,
+                                                    audio: resultData.audio
+                                                });
+                                                try {
+                                                    await reader.cancel();
+                                                } catch (e) {
+                                                    console.warn('取消读取器时出错:', e);
+                                                }
+                                                return;
+                                            }
+                                        } catch (e) {
+                                            console.warn(`[${inputData.type}类型] 解析数据失败，但继续处理:`, e);
+                                        }
+                                    }
+                                } else if (trimmedLine === 'event: error') {
+                                    // 处理错误事件
+                                    completeProcessing(false, new Error('API返回错误事件'));
+                                    try {
+                                        await reader.cancel();
+                                    } catch (e) {
+                                        console.warn('取消读取器时出错:', e);
+                                    }
+                                    return;
+                                } else if (trimmedLine === 'event: done') {
+                                    // 处理完成事件
+                                    console.log('收到done事件，完成处理');
+                                    completeProcessing(true, {
+                                        success: true,
+                                        images: resultData.images,
+                                        audio: resultData.audio
+                                    });
+                                    try {
+                                        await reader.cancel();
+                                    } catch (e) {
+                                        console.warn('取消读取器时出错:', e);
+                                    }
+                                    return;
+                                }
+                            }
+                            
+                            // 继续读取流 - 使用setTimeout避免连续的Promise链
+                            setTimeout(() => {
+                                if (!requestCompleted) {
+                                    processStream().catch(error => {
+                                        console.error('流读取错误:', error);
+                                        // 区分中止错误和其他错误
+                                        if (error.name === 'AbortError' || (error.message && error.message.includes('aborted'))) {
+                                            console.log('流已中止，可能是超时或主动取消');
+                                            // 不要立即标记为错误，让超时逻辑处理
+                                        } else {
+                                            completeProcessing(false, error);
+                                        }
+                                    });
+                                }
+                            }, 0);
+                        } catch (error) {
+                            console.error('流读取错误:', error);
+                            // 区分中止错误和其他错误
+                            if (error.name === 'AbortError' || (error.message && error.message.includes('aborted'))) {
+                                console.log('捕获到中止异常，可能是超时导致');
+                                // 心跳机制或超时导致的中止，统一由超时处理
+                            } else {
+                                completeProcessing(false, error);
+                            }
+                        }
+                    }
+                    
+                    // 开始读取流并启动心跳检查
+                    processStream().catch(error => {
+                        console.error('流读取错误:', error);
+                        completeProcessing(false, error);
+                    });
+                    
+                    // 启动心跳检查
+                    heartBeatCheck();
+                })
+                .catch(error => {
+                    console.error('API请求失败:', error);
+                    // 针对不同错误状态提供更具体的错误信息
+                    if (error.message && error.message.includes('401')) {
+                        completeProcessing(false, new Error('API错误：未授权（401）- 请检查您的授权令牌是否有效或已过期'));
+                    } else if (error.message && error.message.includes('403')) {
+                        completeProcessing(false, new Error('API错误：禁止访问（403）- 您的令牌没有足够权限'));
+                    } else if (error.message && error.message.includes('404')) {
+                        completeProcessing(false, new Error('API错误：未找到（404）- 工作流或应用ID可能无效'));
+                    } else if (error.name === 'AbortError' || (error.message && error.message.includes('aborted'))) {
+                        completeProcessing(false, new Error('API请求超时，请稍后重试或检查网络连接'));
+                    } else {
+                        completeProcessing(false, error);
+                    }
+                });
+                
+                // 增加超时时间至5分钟 - 统一由超时机制处理中止
+                timeoutId = setTimeout(() => {
+                    console.log(`API请求超时(${timeoutDuration/1000}秒)，正在中止请求...`);
+                    if (!requestCompleted) {
+                        try {
+                            abortController.abort();
+                            completeProcessing(false, new Error('API请求超时，请稍后重试或检查网络连接'));
+                        } catch (e) {
+                            console.warn('中止请求时出错:', e);
+                            completeProcessing(false, new Error('API请求处理异常，请稍后重试'));
+                        }
+                    }
+                }, timeoutDuration); // 固定5分钟超时
+            });
+        }
+
+        // 渲染输出结果
+        function renderResult(result) {
+            // 处理图片输出
+            imageUrls = result.images || [];
+            currentImgIndex = 0;
+
+            // 清空原有图片
+            imageList.innerHTML = '';
+
+            if (imageUrls.length > 0) {
+                // 隐藏默认提示，显示图片列表和切换控件
+                defaultImage.classList.add('hidden');
+                imageList.classList.remove('hidden');
+                imageControls.classList.remove('hidden');
+
+                // 生成图片元素
+                imageUrls.forEach((url, index) => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = `输出图片 ${index + 1}`;
+                    img.className = `img-slider absolute inset-0 w-full h-full object-contain ${index === 0 ? '' : 'img-hidden'}`;
+                    img.dataset.index = index;
+                    imageList.appendChild(img);
+                });
+
+                // 更新图片索引文本
+                updateImgIndexText();
+            } else {
+                // 无图片时显示默认提示
+                defaultImage.classList.remove('hidden');
+                imageList.classList.add('hidden');
+                imageControls.classList.add('hidden');
+            }
+
+            // 处理音频输出
+            const audioUrl = result.audio || "";
+            if (audioUrl) {
+                // 设置音频源并显示链接
+                audioPlayer.src = audioUrl;
+                
+                // 添加音频元数据加载事件监听，获取音频时长
+                audioPlayer.onloadedmetadata = function() {
+                    // 使用formatTime函数格式化时长并显示
+                    audioDuration.textContent = formatTime(audioPlayer.duration);
+                };
+                
+                // 如果音频元数据已经加载完成（例如从缓存中加载）
+                if (audioPlayer.readyState >= 1) {
+                    audioDuration.textContent = formatTime(audioPlayer.duration);
+                }
+                
+                audioLink.href = audioUrl;
+                audioLink.textContent = audioUrl;
+                audioLinkContainer.classList.remove('hidden');
+            } else {
+                // 无音频时清空源并隐藏链接
+                audioPlayer.src = "";
+                audioDuration.textContent = '--:--'; // 重置时长显示
+                audioLinkContainer.classList.add('hidden');
+            }
+        }
+
+        // 图片切换工具函数
+        function updateImgIndexText() {
+            imgIndexText.textContent = `${currentImgIndex + 1}/${imageUrls.length}`;
+        }
+
+        function switchImage(targetIndex) {
+            // 边界值处理
+            if (imageUrls.length === 0) return;
+            targetIndex = Math.max(0, Math.min(targetIndex, imageUrls.length - 1));
+
+            // 隐藏当前图片，显示目标图片
+            const allImgs = imageList.querySelectorAll('.img-slider');
+            allImgs.forEach(img => img.classList.add('img-hidden'));
+            allImgs[targetIndex].classList.remove('img-hidden');
+
+            // 更新当前索引和文本
+            currentImgIndex = targetIndex;
+            updateImgIndexText();
+        }
+
+        // 绑定事件监听
+        // 提交按钮点击事件
+        submitBtn.addEventListener('click', async () => {
+            const inputValue = inputContent.value.trim();
+            if (!inputValue) {
+                alert('请输入内容或链接后再提交！');
+                return;
+            }
+
+            // 获取当前选中的输入类型
+            let inputType = 'text';
+            for (const radio of inputTypeRadios) {
+                if (radio.checked) {
+                    inputType = radio.value;
+                    break;
+                }
+            }
+
+            // 显示加载状态，禁用按钮
+            submitBtn.disabled = true;
+            loading.classList.remove('hidden');
+
+            try {
+                // 调用API并处理结果
+                const apiResult = await callCozeAPI({
+                    type: inputType,
+                    content: inputValue
+                });
+
+                // 处理API结果
+                if (apiResult.success) {
+                    renderResult(apiResult);
+                    // 显示成功Toast通知
+                    showToast('内容生成成功！');
+                } else {
+                    // 显示错误Toast通知
+                    showToast(`处理失败：${apiResult.message}`, 'error');
+                }
+            } catch (error) {
+                // 显示错误Toast通知
+                showToast(`API调用失败：${error.message || '未知错误'}`, 'error');
+                console.error('API调用错误:', error);
+            } finally {
+                // 隐藏加载状态，启用按钮
+                submitBtn.disabled = false;
+                loading.classList.add('hidden');
+            }
+        });
+
+        // 图片切换按钮事件
+        prevImgBtn.addEventListener('click', () => {
+            switchImage(currentImgIndex - 1);
+        });
+
+        nextImgBtn.addEventListener('click', () => {
+            switchImage(currentImgIndex + 1);
+        });
+
+        // 输入类型切换时更新占位提示
+        inputTypeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'text') {
+                    inputContent.placeholder = '请输入文本内容（如描述、需求等）';
+                } else {
+                    inputContent.placeholder = '请粘贴链接（如图片链接、文档链接、网页链接等）';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
