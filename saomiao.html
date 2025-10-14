@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>齿轮联动装置 | 星际密室</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入MathJax用于渲染数学公式 -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tech: {
+                            blue: '#0ea5e9',
+                            cyan: '#22d3ee',
+                            purple: '#8b5cf6',
+                            dark: '#0f172a',
+                            darker: '#020617',
+                            panel: 'rgba(15, 23, 42, 0.7)'
+                        }
+                    },
+                    fontFamily: {
+                        tech: ['Rajdhani', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'glow-border': 'glowBorder 2s ease-in-out infinite alternate',
+                        'pulse-glow': 'pulseGlow 1.5s infinite',
+                        'float-glow': 'floatGlow 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        glowBorder: {
+                            '0%': { boxShadow: '0 0 10px rgba(56, 189, 248, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(56, 189, 248, 0.8)' },
+                        },
+                        pulseGlow: {
+                            '0%': { boxShadow: '0 0 0 0 rgba(56, 189, 248, 0.5)' },
+                            '50%': { boxShadow: '0 0 10px 3px rgba(56, 189, 248, 0.8)' },
+                            '100%': { boxShadow: '0 0 0 0 rgba(56, 189, 248, 0.5)' },
+                        },
+                        floatGlow: {
+                            '0%': { 
+                                opacity: '0.6', 
+                                transform: 'translateY(3px)',
+                                textShadow: '0 0 10px rgba(56, 189, 248, 0.6)' 
+                            },
+                            '100%': { 
+                                opacity: '1', 
+                                transform: 'translateY(-8px)',
+                                textShadow: '0 0 25px rgba(56, 189, 248, 0.9)' 
+                            },
+                        }
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .gear-shadow {
+                filter: drop-shadow(0 0 12px rgba(14, 165, 233, 0.7));
+            }
+            .gear-container {
+                transform-origin: center;
+                transition: transform 0.3s ease;
+                flex-shrink: 0;
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+            }
+            .gear-container:hover {
+                transform: scale(1.05);
+            }
+            .gear-container:active {
+                transform: scale(0.98);
+            }
+            .gear-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: all 0.5s ease;
+            }
+            .gear-axis {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background-color: #22d3ee;
+                box-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+                z-index: 10;
+            }
+            .gears-row {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: -100px;
+                margin: -30px 0;
+            }
+            .modal-backdrop {
+                backdrop-filter: blur(4px);
+                background-color: rgba(2, 6, 23, 0.8);
+            }
+            .tech-frame {
+                position: relative;
+                border: 2px solid rgba(56, 189, 248, 0.5);
+                border-radius: 8px;
+                box-shadow: 0 0 15px rgba(56, 189, 248, 0.5),
+                            inset 0 0 10px rgba(56, 189, 248, 0.2);
+                overflow: hidden;
+            }
+            .tech-frame::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: linear-gradient(90deg, rgba(56, 189, 248, 0) 0%, rgba(56, 189, 248, 0.8) 50%, rgba(56, 189, 248, 0) 100%);
+                animation: scanTop 4s linear infinite;
+            }
+            .tech-frame::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: linear-gradient(90deg, rgba(56, 189, 248, 0) 0%, rgba(56, 189, 248, 0.8) 50%, rgba(56, 189, 248, 0) 100%);
+                animation: scanBottom 4s linear infinite;
+                animation-delay: 2s;
+            }
+            @keyframes scanTop {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+            }
+            @keyframes scanBottom {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+            }
+            .text-glow {
+                text-shadow: 0 0 5px rgba(56, 189, 248, 0.7);
+            }
+            .loading-dot {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background-color: rgba(56, 189, 248, 0.8);
+                margin: 0 2px;
+                animation: loadingPulse 1s infinite alternate;
+            }
+            @keyframes loadingPulse {
+                0% { transform: scale(0.8); opacity: 0.5; }
+                100% { transform: scale(1.2); opacity: 1; }
+            }
+        }
+        
+        /* 卡顿动画关键帧：调整转动跨度，让过渡更自然 */
+        @keyframes spin-slow-jitter {
+            0% { transform: rotate(0deg); }
+            15% { transform: rotate(30deg); }
+            30% { transform: rotate(60deg); } 
+            45% { transform: rotate(90deg); }
+            60% { transform: rotate(120deg); } 
+            75% { transform: rotate(150deg); }
+            90% { transform: rotate(180deg); } 
+            100% { transform: rotate(210deg); }
+        }
+        
+        @keyframes spin-medium-jitter {
+            0% { transform: rotate(0deg); }
+            12% { transform: rotate(45deg); }
+            24% { transform: rotate(90deg); } 
+            36% { transform: rotate(135deg); }
+            48% { transform: rotate(180deg); } 
+            60% { transform: rotate(225deg); }
+            72% { transform: rotate(270deg); } 
+            84% { transform: rotate(315deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes spin-fast-jitter {
+            0% { transform: rotate(0deg); }
+            10% { transform: rotate(45deg); }
+            20% { transform: rotate(90deg); } 
+            30% { transform: rotate(135deg); }
+            40% { transform: rotate(180deg); } 
+            50% { transform: rotate(225deg); }
+            60% { transform: rotate(270deg); } 
+            70% { transform: rotate(315deg); }
+            80% { transform: rotate(360deg); } 
+            90% { transform: rotate(405deg); }
+            100% { transform: rotate(450deg); }
+        }
+        
+        .animate-spin-slow {
+            animation: spin-slow-jitter 8s linear infinite;
+        }
+        
+        .animate-spin-medium {
+            animation: spin-medium-jitter 6s linear infinite;
+        }
+        
+        .animate-spin-fast {
+            animation: spin-fast-jitter 4s linear infinite; /* 小齿轮4秒一圈 */
+        }
+        
+        /* 错误样式：仅保留转动，去掉红圈 */
+        .gear-error {
+            /* 移除红圈相关样式 */
+            animation: pulse-error 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse-error {
+            0%, 100% { /* 错误时仅保留微弱视觉反馈，可根据需要调整 */ }
+            50% {  }
+        }
+        
+        .gear-step-complete {
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.9);
+            border: 2px solid rgba(14, 165, 233, 0.9);
+            border-radius: 50%;
+        }
+    </style>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-tech-dark to-tech-darker font-tech text-white min-h-screen overflow-x-hidden">
+    <!-- 顶部导航 -->
+    <header class="bg-tech-dark/80 backdrop-blur-md border-b border-tech-blue/30 py-2 px-6 flex justify-between items-center z-50">
+        <button id="back-button" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-tech-blue/10 hover:bg-tech-blue/30 transition-all duration-300 interactable">
+            <i class="fa fa-arrow-left"></i>
+            <span>返回控制塔</span>
+        </button>
+        <h1 class="text-xl md:text-2xl font-bold text-tech-cyan">齿轮联动装置</h1>
+        <div class="flex items-center gap-2">
+            <button id="hint-button" class="flex items-center gap-1 px-3 py-1 rounded-lg bg-tech-purple/20 hover:bg-tech-purple/40 transition-all duration-300 interactable">
+                <i class="fa fa-lightbulb-o"></i>
+                <span class="text-sm">获取提示</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="relative min-h-[calc(100vh-40px)] flex flex-col items-center justify-center p-4">
+        <!-- 齿轮装置区域 -->
+        <div class="max-w-4xl w-full bg-tech-panel/80 backdrop-blur-sm rounded-xl border border-tech-blue/30 p-6 md:p-10 relative overflow-hidden mb-6">
+            <!-- 装饰性科技线条 -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-tech-blue to-transparent"></div>
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-tech-blue to-transparent"></div>
+            
+            <!-- 上排齿轮：靠右排列 -->
+            <div class="gears-row mb-10 justify-end ml-auto pr-10">
+                <!-- 上排1（小） -->
+                <div class="w-[100px] h-[100px] gear-container" id="gear1-top">
+                    <img src="gear5.png" alt="上排小齿轮" class="gear-img gear-shadow" />
+                    <div class="gear-axis"></div>
+                </div>
+                <!-- 上排2（中） -->
+                <div class="w-[150px] h-[150px] gear-container" id="gear2-top">
+                    <img src="gear3.png" alt="上排中齿轮" class="gear-img gear-shadow" />
+                    <div class="gear-axis"></div>
+                </div>
+                <!-- 上排3（大）- 第一步触发齿轮 -->
+                <div class="w-[200px] h-[200px] gear-container" id="gear3-top">
+                    <img src="gear1.png" alt="上排大齿轮（第一步）" class="gear-img gear-shadow" />
+                    <div class="gear-axis"></div>
+                </div>
+            </div>
+            
+            <!-- 下排齿轮：靠左排列 -->
+            <div class="gears-row justify-start mr-auto">
+                <!-- 下排第1个：中尺寸齿轮 -->
+                <div class="w-[150px] h-[150px] gear-container" id="gear1-bottom">
+                    <img src="gear4.png" alt="下排中齿轮" class="gear-img gear-shadow" />
+                    <div class="gear-axis"></div>
+                </div>
+                <!-- 下排第2个：大尺寸齿轮 -->
+                <div class="w-[180px] h-[180px] gear-container" id="gear2-bottom">
+                    <img src="gear6.png" alt="下排大齿轮" class="gear-img gear-shadow" />
+                    <div class="gear-axis"></div>
+                </div>
+                <!-- 下排第3个：小尺寸齿轮 -->
+                <div class="w-[120px] h-[120px] gear-container" id="gear3-bottom">
+                    <img src="gear2.png" alt="下排小齿轮" class="gear-img gear-shadow" />
+                    <div class="gear-axis"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 说明和控制区域：与上方齿轮区域宽度对齐（max-w-4xl） -->
+        <div class="max-w-4xl w-full flex flex-col md:flex-row gap-6 mt-8">
+            <div class="w-full md:w-2/3 bg-tech-panel/80 backdrop-blur-sm rounded-xl border border-tech-blue/20 p-4">
+                <h2 class="text-lg font-bold text-tech-cyan mb-2 flex items-center">
+                    <i class="fa fa-info-circle mr-2"></i>装置说明
+                </h2>
+                <p class="text-gray-300 text-sm md:text-base">这是能量扫描仪的核心齿轮联动装置，需按<em class="text-tech-cyan">特定顺序</em>触发齿轮才能启动全局联动。成功激活后，主控制塔的能量扫描仪将可正常工作，用于探测密室能量场。错误操作仅会触发局部卡顿，观察齿轮的反馈寻找规律。</p>
+                
+                <div class="mt-4 flex justify-center">
+                    <button id="reset-button" class="py-2 px-4 bg-tech-blue/20 hover:bg-tech-blue/40 text-white rounded-lg transition-all duration-300 flex items-center justify-center gap-2 interactable">
+                        <i class="fa fa-refresh"></i>
+                        <span>重置装置</span>
+                    </button>
+                </div>
+                
+                <!-- 进度指示器 -->
+                <div class="mt-4">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm">同步进度</span>
+                        <span id="progress-text" class="text-sm">0%</span>
+                    </div>
+                    <div class="w-full bg-tech-dark rounded-full h-2">
+                        <div id="progress-bar" class="bg-gradient-to-r from-tech-blue to-tech-purple h-2 rounded-full w-0 transition-all duration-1000"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-1/3 bg-tech-panel/80 backdrop-blur-sm rounded-xl border border-tech-blue/20 p-4 flex flex-col">
+                <h2 class="text-lg font-bold text-tech-cyan mb-2 flex items-center">
+                    <i class="fa fa-trophy mr-2"></i>解谜状态
+                </h2>
+                <div id="success-message" class="hidden flex-grow flex flex-col items-center justify-center p-3 bg-gradient-to-r from-tech-purple/20 to-tech-cyan/20 rounded-lg border border-tech-purple/40 animate-pulse-slow">
+                    <i class="fa fa-check-circle text-3xl text-tech-purple mb-2"></i>
+                    <h3 class="text-tech-purple font-semibold mb-1">谜题已解开!</h3>
+                    <p class="text-sm text-center">所有齿轮同步联动，能量扫描仪核心已激活，可返回控制塔使用扫描仪。与此同时，你获得一串神秘数字——190</p>
+                </div>
+                <div id="progress-indicator" class="flex-grow flex flex-col items-center justify-center">
+                    <i class="fa fa-cogs text-2xl text-gray-400 mb-2"></i>
+                    <p class="text-sm text-center text-gray-400">等待正确触发齿轮...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 提示词模态框 -->
+    <div id="hint-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden">
+        <div class="tech-frame max-w-xl w-full mx-4 p-6 animate-fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-tech-cyan">装置提示</h3>
+                <button id="close-hint" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <!-- 提示内容容器：初始显示加载态，API返回后替换 -->
+            <div id="hint-content" class="text-gray-300 text-base max-h-96 overflow-y-auto pr-2 text-glow">
+                <div class="text-center py-4">
+                    <p class="mb-2">加载提示中...</p>
+                    <div class="flex justify-center">
+                        <span class="loading-dot"></span>
+                        <span class="loading-dot" style="animation-delay: 0.2s"></span>
+                        <span class="loading-dot" style="animation-delay: 0.4s"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button id="confirm-hint" class="px-4 py-2 bg-tech-blue/30 hover:bg-tech-blue/50 rounded-lg transition-colors interactable">
+                    明白
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 【新增1/3】ChatSDK加载失败备用按钮 -->
+    <div id="chat-retry-btn">
+        <i class="fa fa-comment-dots"></i>
+    </div>
+
+    <!-- 【新增2/3】引入独立的ChatSDK JS文件 -->
+    <script src="chat-sdk.js"></script>
+
+    <script>
+        (function() {
+        // -------------------------- 第一步：安全获取DOM元素（增加容错） --------------------------
+        const getEl = (id) => document.getElementById(id) || null;
+        const elements = {
+            scanArea: getEl('scan-area'),
+            scanLine: getEl('scan-line'),
+            resultContainer: getEl('result-container'),
+            resultContent: getEl('result-content'),
+            backButton: getEl('back-button'),
+            hintButton: getEl('hint-button'),
+            hintModal: getEl('hint-modal'),
+            closeHint: getEl('close-hint'),
+            confirmHint: getEl('confirm-hint'),
+            hintContent: getEl('hint-content'),
+            progressBar: getEl('progress-bar'),
+            progressText: getEl('progress-text')
+        };
+    
+        // 检查关键元素缺失
+        const requiredEls = ['scanArea', 'scanLine', 'resultContainer', 'hintContent', 'hintModal'];
+        requiredEls.forEach(key => {
+            if (!elements[key]) console.warn(`⚠️  关键元素缺失：id="${key.replace(/([A-Z])/g, '-$1').toLowerCase()}"`);
+        });
+    
+        // -------------------------- 第二步：核心状态变量 --------------------------
+        let isScanning = false;
+        let scanProgress = 0;
+        let scanInterval = null;
+        // 从localStorage读取知识点（默认“有理数”）
+        const inputKnowledge = localStorage.getItem('mathKnowledge') || '有理数';
+    
+        // 自定义换行符处理
+        function formatLineBreaks(text) {
+            if (!text) return '';
+            return text.replace(/\n{3}/g, '<br><br>').replace(/\n{2}/g, '<br>').replace(/\n/g, '<br>');
+        }
+    
+        // -------------------------- 第三步：修复MathJax渲染（兼容加载失败） --------------------------
+        function renderMath() {
+            if (!elements.hintContent) return;
+    
+            // 核心修复：先判断MathJax和typeset是否存在，避免调用undefined
+            if (!window.MathJax || typeof MathJax.typeset !== 'function') {
+                elements.hintContent.innerHTML += '<p class="text-red-400 text-xs mt-2">公式渲染工具未加载，无法显示数学公式</p>';
+                return;
+            }
+    
+            // 用try-catch替代链式catch，兼容typeset返回非Promise的情况
+            try {
+                const renderResult = MathJax.typeset([elements.hintContent]);
+                // 若返回Promise，再处理catch（MathJax v3+返回Promise，v2不返回）
+                if (renderResult && typeof renderResult.catch === 'function') {
+                    renderResult.catch(err => {
+                        console.error('MathJax渲染失败：', err);
+                        elements.hintContent.innerHTML += '<p class="text-red-400 text-xs mt-2">公式渲染失败，请刷新页面重试</p>';
+                    });
+                }
+            } catch (err) {
+                console.error('MathJax调用异常：', err);
+                elements.hintContent.innerHTML += '<p class="text-red-400 text-xs mt-2">公式渲染失败，请刷新页面重试</p>';
+            }
+        }
+    
+        // -------------------------- 第四步：Coze API请求（修复后） --------------------------
+        async function fetchCozeHint() {
+            if (!elements.hintContent) return;
+    
+            // 加载态
+            elements.hintContent.innerHTML = `
+                <div class="text-center py-4">
+                    <p class="mb-2">加载提示中...</p>
+                    <div class="flex justify-center">
+                        <span class="loading-dot"></span>
+                        <span class="loading-dot" style="animation-delay: 0.2s"></span>
+                        <span class="loading-dot" style="animation-delay: 0.4s"></span>
+                    </div>
+                </div>
+            `;
+    
+            const apiUrl = 'https://api.coze.cn/v1/workflow/stream_run';
+            const token = 'sat_ZUvu7vrte22QySxTNgbO2PXp1xo5jJGOF8CaxtclU6NqxKBYZirfGVxdU6ir0Nik';
+            const workflowId = '7560221371226652706';
+            const appId = '7556860834094923830';
+    
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        workflow_id: workflowId,
+                        app_id: appId,
+                        parameters: { input: inputKnowledge } // 用读取的知识点（默认“有理数”）
+                    })
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.text().catch(() => '无错误详情');
+                    throw new Error(`API请求失败（${response.status}）：${errorData}`);
+                }
+    
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let outputContent = null;
+                let incompleteChunk = '';
+    
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+    
+                    let chunk = decoder.decode(value, { stream: true });
+                    if (incompleteChunk) {
+                        chunk = incompleteChunk + chunk;
+                        incompleteChunk = '';
+                    }
+    
+                    const lines = chunk.split('\n');
+                    if (!chunk.endsWith('\n') && lines.length > 0) {
+                        incompleteChunk = lines.pop() || '';
+                    }
+    
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (trimmed.startsWith('data:')) {
+                            const data = trimmed.substring('data:'.length).trim();
+                            if (!data) continue;
+    
+                            let messageData;
+                            try {
+                                messageData = JSON.parse(data);
+                            } catch (parseErr) {
+                                console.error('解析API数据失败：', parseErr);
+                                continue;
+                            }
+    
+                            if (messageData.content) {
+                                try {
+                                    const contentJson = JSON.parse(messageData.content);
+                                    if (contentJson.output) {
+                                        outputContent = contentJson.output;
+                                        reader.cancel();
+                                        break;
+                                    }
+                                } catch (e) {
+                                    outputContent = messageData.content;
+                                    reader.cancel();
+                                    break;
+                                }
+                            } else if (messageData.output) {
+                                outputContent = messageData.output;
+                                reader.cancel();
+                                break;
+                            }
+                        }
+                    }
+                    if (outputContent) break;
+                }
+    
+                // 处理最后一块未完成的内容
+                if (incompleteChunk && !outputContent) {
+                    if (incompleteChunk.startsWith('data:')) {
+                        const data = incompleteChunk.substring('data:'.length).trim();
+                        try {
+                            const messageData = JSON.parse(data);
+                            outputContent = messageData.content || messageData.output;
+                        } catch (err) {
+                            console.error('解析最后一块API数据失败：', err);
+                        }
+                    }
+                }
+    
+                // 渲染提示内容
+                if (outputContent) {
+                    const formattedHint = formatLineBreaks(outputContent).replace(/^"|"$/g, '');
+                    elements.hintContent.innerHTML = formattedHint;
+                    renderMath(); // 修复后调用，不会报错
+                } else {
+                    elements.hintContent.innerHTML = '<p class="text-gray-300">未获取到有效提示，请稍后重试</p>';
+                }
+    
+            } catch (error) {
+                console.error('Coze API 完整错误信息：', error);
+                // 兜底提示（兼容无MathJax的情况）
+                const fallbackHint = `
+    <div class="space-y-4 text-gray-300 text-sm">
+      <div>1. 基于${inputKnowledge}知识点：星尘实验室的量子能量监测仪中，需区分该知识点的核心概念（如有理数的整数/分数分类）</div>
+      <div>2. 飞船推进器数据中，若涉及${inputKnowledge}的计算（如无理数判断），需排除不符合定义的数值（如无限不循环小数）</div>
+      <div>3. AI导航系统在${inputKnowledge}框架下，任意两个符合定义的数值运算后仍需满足该知识点的性质（如有理数加减仍为有理数）</div>
+      <div>4. 量子计算机处理${inputKnowledge}相关数据时，需确保输入符合该知识点的严格定义（如分数需为整数比形式）</div>
+      <div>5. 能量护盾参数调节中，${inputKnowledge}的非零特性需重点关注（如有理数非零才能参与有效运算）</div>
+      <div>6. 星际距离测量中，若结果需符合${inputKnowledge}定义（如根号结果需为整数），否则需转换为符合要求的形式</div>
+    </div>
+                `;
+                elements.hintContent.innerHTML = fallbackHint;
+                // 仅在MathJax存在时尝试渲染
+                if (window.MathJax && typeof MathJax.typeset === 'function') {
+                    renderMath();
+                }
+            }
+        }
+    
+        // -------------------------- 第五步：扫描动画逻辑 --------------------------
+        function startScan() {
+            if (isScanning || !elements.scanArea || !elements.scanLine || !elements.progressBar || !elements.progressText) return;
+    
+            isScanning = true;
+            scanProgress = 0;
+            elements.scanArea.classList.add('scan-active');
+            elements.scanLine.style.top = '0%';
+            elements.progressBar.style.width = '0%';
+            elements.progressText.textContent = '0%';
+            elements.resultContainer.classList.add('hidden');
+    
+            // 扫描进度定时器
+            scanInterval = setInterval(() => {
+                scanProgress += 0.5;
+                elements.scanLine.style.top = `${scanProgress}%`;
+                elements.progressBar.style.width = `${scanProgress}%`;
+                elements.progressText.textContent = `${Math.round(scanProgress)}%`;
+    
+                // 扫描完成
+                if (scanProgress >= 100) {
+                    clearInterval(scanInterval);
+                    elements.scanArea.classList.remove('scan-active');
+                    elements.resultContainer.classList.remove('hidden');
+                    isScanning = false;
+                    // 显示扫描结果（结合知识点）
+                    showScanResult();
+                }
+            }, 50);
+        }
+    
+        // 显示扫描结果（结合当前知识点）
+        function showScanResult() {
+            if (!elements.resultContent) return;
+    
+            const resultText = `
+                <div class="p-3">
+                    <h3 class="text-lg font-bold text-primary mb-2">${inputKnowledge}知识点扫描结果</h3>
+                    <p class="text-gray-300 mb-3">基于${inputKnowledge}的核心定义，扫描到以下关键数据：</p>
+                    <ul class="list-disc list-inside space-y-1 text-gray-300 text-sm">
+                        <li>量子能量读数：3.14（符合${inputKnowledge}定义：是有限小数，可化为分数）</li>
+                        <li>推进器燃料率：0.777...（符合${inputKnowledge}定义：是无限循环小数）</li>
+                        <li>导航坐标差：√2（不符合${inputKnowledge}定义：是无限不循环小数）</li>
+                        <li>护盾调节值：-5/2（符合${inputKnowledge}定义：是整数比形式的分数）</li>
+                    </ul>
+                    <p class="mt-3 text-gray-300 text-sm">请基于${inputKnowledge}的定义，判断并排除不符合要求的数据，完成设备校准。</p>
+                </div>
+            `;
+            elements.resultContent.innerHTML = resultText;
+            // 仅在MathJax存在时渲染
+            if (window.MathJax && typeof MathJax.typeset === 'function') {
+                MathJax.typeset([elements.resultContent]).catch(err => console.error('结果公式渲染失败：', err));
+            }
+        }
+    
+        // 重置扫描
+        function resetScan() {
+            clearInterval(scanInterval);
+            isScanning = false;
+            scanProgress = 0;
+            if (elements.scanArea) elements.scanArea.classList.remove('scan-active');
+            if (elements.scanLine) elements.scanLine.style.top = '0%';
+            if (elements.progressBar) elements.progressBar.style.width = '0%';
+            if (elements.progressText) elements.progressText.textContent = '0%';
+            if (elements.resultContainer) elements.resultContainer.classList.add('hidden');
+        }
+    
+        // -------------------------- 第六步：按钮事件绑定 --------------------------
+        // 扫描区域点击（开始扫描）
+        if (elements.scanArea) {
+            elements.scanArea.addEventListener('click', startScan);
+        }
+    
+        // 返回按钮
+        if (elements.backButton) {
+            elements.backButton.addEventListener('click', () => {
+                resetScan();
+                window.location.href = 'mishi.html';
+            });
+        }
+    
+        // 提示模态框
+        if (elements.hintButton) {
+            elements.hintButton.addEventListener('click', async () => {
+                if (!elements.hintModal || !elements.hintContent) return;
+                elements.hintModal.classList.remove('hidden');
+                await fetchCozeHint();
+            });
+        }
+    
+        // 关闭提示
+        if (elements.closeHint) {
+            elements.closeHint.addEventListener('click', () => {
+                if (elements.hintModal) elements.hintModal.classList.add('hidden');
+            });
+        }
+    
+        if (elements.confirmHint) {
+            elements.confirmHint.addEventListener('click', () => {
+                if (elements.hintModal) elements.hintModal.classList.add('hidden');
+            });
+        }
+    
+        // 点击模态框背景关闭
+        if (elements.hintModal) {
+            elements.hintModal.addEventListener('click', (e) => {
+                if (e.target === elements.hintModal) {
+                    elements.hintModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // 【新增3/3】初始化ChatSDK，适配页面主色#0ea5e9（tech.blue）
+        new FloatingChatSDK({
+            appId: "7551596535822958646",
+            workflowId: "7560369410436513828",
+            token: "sat_ZUvu7vrte22QySxTNgbO2PXp1xo5jJGOF8CaxtclU6NqxKBYZirfGVxdU6ir0Nik",
+            primaryColor: "#0ea5e9" // 匹配当前页面主色（tech.blue）
+        });
+    
+        // -------------------------- 第七步：页面加载初始化 --------------------------
+        window.addEventListener('load', () => {
+            // 页面加载完成后自动开始第一次扫描
+            setTimeout(startScan, 1000);
+            // 预加载MathJax（可选，加快后续渲染）
+            if (!window.MathJax) {
+                console.log('MathJax未加载，将使用兜底提示');
+            }
+        });
+    
+        // 页面离开前清理定时器
+        window.addEventListener('beforeunload', () => {
+            clearInterval(scanInterval);
+        });
+    })();
+    </script>
+</body>
+</html>
