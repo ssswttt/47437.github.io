@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星尘七号 - 实验日志核心</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tech-blue': '#00f0ff',
+                        'tech-dark': '#050a30',
+                        'tech-darker': '#03071e',
+                        'tech-gray': '#1e3a8a',
+                        'glow': '#00f0ff',
+                    },
+                    fontFamily: {
+                        'future': ['Orbitron', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'scan': 'scan 4s linear infinite',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { textShadow: '0 0 5px #00f0ff, 0 0 10px #00f0ff' },
+                            '100%': { textShadow: '0 0 10px #00f0ff, 0 0 20px #00f0ff, 0 0 30px #00f0ff' },
+                        },
+                        scan: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow-glow {
+                text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff;
+            }
+            .border-glow {
+                box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
+            }
+            .grid-bg {
+                background-image: 
+                    linear-gradient(rgba(0, 240, 255, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
+            .scanline::before {
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 5px;
+                background: rgba(0, 240, 255, 0.1);
+                animation: scan 4s linear infinite;
+            }
+            .noise-bg {
+                position: relative;
+            }
+            .noise-bg::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+                pointer-events: none;
+            }
+            .bg-tech-desktop {
+                background-image: url('rizhi.png'); /* 替换为实际图片URL */
+                background-size: cover;
+                background-position: center;
+                opacity: 0.2; /* 半透明程度，可按需调整 */
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="bg-tech-darker grid-bg noise-bg min-h-screen flex items-center justify-center p-4 font-mono text-gray-300 relative overflow-hidden">
+    <!-- 半透明科技桌面背景图 -->
+    <div class="absolute inset-0 bg-tech-desktop z-0"></div>
+
+    <!-- 装饰性元素 -->
+    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <div class="absolute top-10 left-10 w-40 h-40 border border-tech-blue/30 rounded-full animate-pulse-slow"></div>
+        <div class="absolute bottom-20 right-20 w-60 h-60 border border-tech-blue/20 rounded-full animate-pulse-slow" style="animation-delay: 1s"></div>
+    </div>
+
+    <!-- 返回按钮 - 修复位置并添加跳转功能 -->
+    <button id="back-btn" class="absolute top-4 left-4 z-20 bg-tech-dark/50 hover:bg-tech-dark border border-tech-blue/50 text-tech-blue px-4 py-2 rounded text-sm flex items-center transition-all duration-300 hover:border-tech-blue">
+        <i class="fa fa-arrow-left mr-2"></i>
+        <span>返回控制塔</span>
+    </button>
+
+    <!-- 日志标题 -->
+    <div class="absolute top-4 right-4 text-tech-blue text-shadow-glow font-future z-10">
+        <span>实验日志 #XM-24</span>
+        <div class="text-xs opacity-70 mt-1">最后更新: 星尘历34年7月15日</div>
+    </div>
+
+    <!-- 主内容容器 -->
+    <div class="relative scanline bg-tech-dark/80 border-2 border-tech-blue rounded-lg p-6 md:p-8 max-w-2xl w-full border-glow z-10">
+        <!-- 标题 -->
+        <div class="text-center mb-6">
+            <h1 class="text-tech-blue text-2xl md:text-3xl font-future font-bold text-shadow-glow mb-2">能量核心启动密钥解析</h1>
+            <div class="h-px bg-tech-blue/30 w-32 mx-auto"></div>
+        </div>
+
+        <!-- 日志内容 -->
+        <div class="space-y-4 text-gray-300 leading-relaxed">
+            <p>经过73天的连续演算，终于破解了能量核心的启动序列。所有异常数据流都指向一个恒定值——<span class="text-tech-blue font-bold text-xl animate-glow inline-block mx-1">3</span><span class="text-tech-blue font-bold text-xl animate-glow inline-block mx-1" style="animation-delay: 0.2s">2</span><span class="text-tech-blue font-bold text-xl animate-glow inline-block mx-1" style="animation-delay: 0.4s">2</span>。</p>
+            
+            <p>这个数字并非随机生成，而是星尘核心物质的量子共振频率平方值，是打开稳定能量场的关键。当核心温度达到1786K时，输入此序列将触发连锁反应，形成安全可控的能量屏障。</p>
+            
+            <p>警告：任何情况下不得修改序列中的任何数字。322不仅是启动密钥，也是维持核心稳定的平衡常数。修改任何一位数字将导致量子失衡，引发不可逆转的磁场崩溃。</p>
+            
+            <p class="text-tech-blue/80 italic mt-6">——Dr. Zero 最后的记录</p>
+        </div>
+
+        <!-- 底部标记 -->
+        <div class="mt-8 pt-4 border-t border-tech-blue/30 flex justify-between items-center">
+            <div class="text-xs opacity-60">星尘七号实验室 - 最高权限文档</div>
+            <div class="text-tech-blue text-shadow-glow text-sm">
+                <i class="fa fa-lock mr-1"></i>已解密
+            </div>
+        </div>
+    </div>
+
+    <!-- 状态指示器 -->
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 text-xs z-10">
+        <div class="flex items-center">
+            <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+            <span>系统稳定</span>
+        </div>
+        <div class="flex items-center">
+            <span class="w-2 h-2 bg-tech-blue rounded-full mr-2"></span>
+            <span>量子锁已解除</span>
+        </div>
+        <div class="flex items-center">
+            <span class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+            <span>磁场强度: 32.2T</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 修复返回按钮跳转功能
+            document.getElementById('back-btn').addEventListener('click', () => {
+                window.location.href = 'mishi.html';
+            });
+            
+            // 边框闪烁效果
+            setInterval(() => {
+                const elements = document.querySelectorAll('.border-glow');
+                elements.forEach(el => {
+                    el.style.boxShadow = Math.random() > 0.7 
+                        ? '0 0 8px #00f0ff, 0 0 15px #00f0ff inset' 
+                        : '0 0 5px #00f0ff, 0 0 10px #00f0ff inset';
+                });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

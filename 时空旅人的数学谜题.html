@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时空旅人的数学谜题</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#7B61FF',
+                        accent: '#00A3FF',
+                        light: '#FFFFFF',
+                        dark: '#333647',
+                        neutral: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['"Orbitron"', 'sans-serif']
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-glow {
+                text-shadow: 0 0 10px rgba(0, 163, 255, 0.5);
+            }
+            .space-bg {
+                background-image: 
+                    radial-gradient(circle at 10% 20%, rgba(22, 93, 255, 0.05) 0%, rgba(123, 97, 255, 0.03) 90%),
+                    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            }
+            .pulse-light {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .float {
+                animation: float 6s ease-in-out infinite;
+            }
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-20px); }
+                100% { transform: translateY(0px); }
+            }
+            .glow-border {
+                box-shadow: 0 0 15px rgba(0, 163, 255, 0.5);
+            }
+            .crystal-blue {
+                background: linear-gradient(135deg, #165DFF 0%, #00A3FF 100%);
+            }
+            .crystal-green {
+                background: linear-gradient(135deg, #36D399 0%, #00B42A 100%);
+            }
+            .crystal-red {
+                background: linear-gradient(135deg, #FF7D00 0%, #F53F3F 100%);
+            }
+            .crystal-purple {
+                background: linear-gradient(135deg, #9D50BB 0%, #6E48AA 100%);
+            }
+            .crystal-yellow {
+                background: linear-gradient(135deg, #FFD166 0%, #FFAB00 100%);
+            }
+            .color-box {
+                width: 30px;
+                height: 30px;
+                display: inline-block;
+                margin: 0 5px;
+                border-radius: 4px;
+                border: 2px solid rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-light text-dark font-sans space-bg min-h-screen">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed w-full bg-white/90 backdrop-blur-md z-50 transition-all duration-300 shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-cube text-accent text-2xl"></i>
+                <h1 class="text-xl font-bold font-display text-accent">时空谜题</h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#intro" class="nav-link hover:text-accent transition-colors">简介</a>
+                <a href="#mission" class="nav-link hover:text-accent transition-colors">故事</a>
+                <a href="#characters" class="nav-link hover:text-accent transition-colors">角色</a>
+                <a href="#play" class="nav-link hover:text-accent transition-colors">
+                    <span class="px-4 py-1 bg-accent text-white rounded-full text-sm font-medium">开始任务</span>
+                </a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-dark text-xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-md">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#intro" class="py-2 hover:text-accent transition-colors">简介</a>
+                <a href="#mission" class="nav-link hover:text-accent transition-colors">故事</a>
+                <a href="#characters" class="nav-link hover:text-accent transition-colors">角色</a>
+                <a href="#play" class="py-2 hover:text-accent transition-colors">开始任务</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section id="intro" class="pt-24 pb-16 md:pt-32 md:pb-24 relative overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-0 w-full h-full bg-[url('https://picsum.photos/1920/1080?random=1')] bg-cover bg-center opacity-10"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <div class="inline-block px-4 py-1 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4 pulse-light">
+                        初中数学 · 科幻剧本杀
+                    </div>
+                    <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold font-display leading-tight text-glow mb-6">
+                        时空旅人的<br>
+                        <span class="text-accent">数学谜题</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-lg">
+                        百年一遇的流星雨之夜，天文社接收到来自外星文明的神秘信号。一位时空旅人因飞船能源核心碎裂而被困，
+                        只有解开水晶碎片上的数学封印，才能帮助他重返家园。
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#play" class="inline-flex items-center px-6 py-3 bg-accent text-white rounded-lg shadow-md hover:bg-accent/90 transition-all transform hover:-translate-y-1">
+                            开始任务 <i class="fa fa-rocket ml-2"></i>
+                        </a>
+                        <a href="#mission" class="inline-flex items-center px-6 py-3 bg-transparent text-accent border border-accent rounded-lg hover:bg-accent/5 transition-all transform hover:-translate-y-1">
+                            了解详情 <i class="fa fa-info-circle ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 relative">
+                    <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl float">
+                        <img src="https://picsum.photos/600/400?random=10" alt="流星雨下的天文台" class="w-full h-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/60 to-transparent flex items-end">
+                            <div class="p-6">
+                                <p class="text-accent font-display mb-1">接收到神秘信号...</p>
+                                <p class="text-white/90 text-sm">坐标：天文社观测台</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 w-36 h-36 bg-primary/20 rounded-full blur-3xl z-0"></div>
+                    <div class="absolute -top-6 -right-6 w-36 h-36 bg-accent/10 rounded-full blur-3xl z-0"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 故事背景部分 -->
+    <section id="mission" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+        <div class="inline-block px-4 py-1 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">
+            故事背景
+        </div>
+        <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold font-display mb-4">时空奇遇</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">一个充满挑战的夜晚，等待你来应对</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto bg-gray-50 rounded-2xl p-8 shadow-sm">
+        <div class="flex items-center mb-6">
+            <div class="w-10 h-1 bg-primary rounded-full mr-3"></div>
+            <h3 class="text-xl font-bold text-primary">天文社之夜</h3>
+        </div>
+        
+        <p class="mb-6 leading-relaxed">
+            这是你在天文社度过的第三个学期，今晚是百年一遇的流星雨观测活动。晚上8点，
+            指导老师交代完注意事项后便离开了，留下你们六位天文社成员负责今晚的观测记录。
+        </p>
+        
+        <div class="bg-white p-4 rounded-xl border-l-4 border-primary mb-6 shadow-sm">
+            <p class="italic text-gray-700">
+            "今晚的流星雨很特别，据说会有不寻常的天文现象。记住，遇到任何异常情况不要慌张，
+            用你们学过的数学知识来分析，总能找到答案的。观测设备和记录本都在控制室里。"
+            </p>
+            <p class="text-right text-sm text-gray-500 mt-2">—— 张老师的留言</p>
+        </div>
+        
+        <p class="leading-relaxed">
+            刚开始一切正常，流星雨如约而至。时钟指向午夜12点，天文台的射电望远镜突然接收到异常信号。
+            紧接着，控制室的显示屏开始闪烁神秘代码，观测设备也出现了异常读数。
+            看来张老师说的"不寻常"真的要发生了...
+        </p>
+        
+        <div class="mt-8 flex justify-center">
+            <a href="#play" class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all">
+            开始观测 <i class="fa fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- 角色介绍 -->
+    <section id="characters" class="py-16 relative bg-neutral">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="inline-block px-4 py-1 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">
+                    时空响应者
+                </div>
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold font-display mb-4">角色介绍</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">六位被选中的同学，各自拥有独特的数学能力</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- 算法工程师 -->
+                <div class="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-accent/30 transition-all duration-300 group shadow-sm hover:shadow-md">
+                    <div class="h-48 overflow-hidden bg-gradient-to-br from-primary/5 to-white">
+                        <div class="h-full flex items-center justify-center">
+                            <i class="fa fa-code text-6xl text-primary/70 group-hover:text-primary transition-colors"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-display mb-2 text-accent">算法工程师</h3>
+                        <p class="text-gray-600 mb-4 text-sm">
+                            擅长程序逻辑，能从混乱中理清顺序。对数列和逻辑推理有敏锐的洞察力。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">逻辑推理</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">序列分析</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 几何学家 -->
+                <div class="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-accent/30 transition-all duration-300 group shadow-sm hover:shadow-md">
+                    <div class="h-48 overflow-hidden bg-gradient-to-br from-primary/5 to-white">
+                        <div class="h-full flex items-center justify-center">
+                            <i class="fa fa-cubes text-6xl text-primary/70 group-hover:text-primary transition-colors"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-display mb-2 text-accent">几何学家</h3>
+                        <p class="text-gray-600 mb-4 text-sm">
+                            对空间和图形有直觉般的理解。能快速识别图形特征和空间关系。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">图形分析</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">空间感知</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数论学者 -->
+                <div class="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-accent/30 transition-all duration-300 group shadow-sm hover:shadow-md">
+                    <div class="h-48 overflow-hidden bg-gradient-to-br from-primary/5 to-white">
+                        <div class="h-full flex items-center justify-center">
+                            <i class="fa fa-hashtag text-6xl text-primary/70 group-hover:text-primary transition-colors"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-display mb-2 text-accent">数论学者</h3>
+                        <p class="text-gray-600 mb-4 text-sm">
+                            痴迷于数字的规律和特性。对质数、因数等数字属性有深入研究。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">数字规律</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">质数研究</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 概率专家 -->
+                <div class="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-accent/30 transition-all duration-300 group shadow-sm hover:shadow-md">
+                    <div class="h-48 overflow-hidden bg-gradient-to-br from-primary/5 to-white">
+                        <div class="h-full flex items-center justify-center">
+                            <i class="fa fa-random text-6xl text-primary/70 group-hover:text-primary transition-colors"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-display mb-2 text-accent">概率专家</h3>
+                        <p class="text-gray-600 mb-4 text-sm">
+                            善于预测和评估各种可能性。能快速计算事件发生的概率和可能结果。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">可能性分析</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">结果预测</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 密码破译员 -->
+                <div class="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-accent/30 transition-all duration-300 group shadow-sm hover:shadow-md">
+                    <div class="h-48 overflow-hidden bg-gradient-to-br from-primary/5 to-white">
+                        <div class="h-full flex items-center justify-center">
+                            <i class="fa fa-key text-6xl text-primary/70 group-hover:text-primary transition-colors"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-display mb-2 text-accent">密码破译员</h3>
+                        <p class="text-gray-600 mb-4 text-sm">
+                            对代码和暗号有天生的敏感度。能从看似无意义的信息中发现隐藏规律。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">模式识别</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">密码破解</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据协调员 -->
+                <div class="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-accent/30 transition-all duration-300 group shadow-sm hover:shadow-md">
+                    <div class="h-48 overflow-hidden bg-gradient-to-br from-primary/5 to-white">
+                        <div class="h-full flex items-center justify-center">
+                            <i class="fa fa-database text-6xl text-primary/70 group-hover:text-primary transition-colors"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-display mb-2 text-accent">数据协调员</h3>
+                        <p class="text-gray-600 mb-4 text-sm">
+                            能高效地从大量信息中提取关键数据。擅长整合分析多种来源的信息。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">信息整合</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">数据分析</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 游戏区域 -->
+    <section id="play" class="py-16 relative bg-neutral">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="inline-block px-4 py-1 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">
+                    开始任务
+                </div>
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold font-display mb-4">时空谜题挑战</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">解开所有数学谜题，重组能量水晶，帮助时空旅人回家</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <!-- 游戏进度 -->
+                <div class="mb-10 bg-white p-4 rounded-xl shadow-sm">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">任务进度</span>
+                        <span class="text-accent font-bold" id="progress-text">0/5</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2.5">
+                        <div id="progress-bar" class="bg-accent h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between mt-1 text-xs text-gray-500">
+                        <span>信号解码</span>
+                        <span>能量序列</span>
+                        <span>时空坐标</span>
+                        <span>颜色密码</span>
+                        <span>结束任务</span>
+                    </div>
+                </div>
+
+                <!-- 游戏容器 -->
+                <div class="bg-white border border-gray-100 rounded-2xl shadow-md overflow-hidden">
+                    <!-- 游戏开始界面 -->
+                    <div id="game-start" class="p-8 text-center">
+                        <div class="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fa fa-rocket text-5xl text-accent"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold font-display mb-4">准备开始任务</h3>
+                        <p class="text-gray-600 mb-8 max-w-lg mx-auto">
+                            作为被选中的"时空响应者"，你们将共同解开水晶碎片上的数学谜题。
+                            每解开一个谜题，就能获得一块水晶碎片。集齐五块碎片，即可重组能量核心，
+                            帮助时空旅人重返家园。准备好了吗？
+                        </p>
+                        <button id="start-mission" class="px-8 py-3 bg-accent text-white rounded-lg shadow-md hover:bg-accent/90 transition-all text-lg transform hover:-translate-y-1">
+                            启动任务
+                        </button>
+                    </div>
+
+                    <!-- 第一幕：信号解码 -->
+                    <div id="scene-1" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=20" alt="地面几何图形阵列" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold font-display mb-1">第一幕：信号解码</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-neutral border border-gray-100 p-5 rounded-xl mb-6">
+                                <p class="mb-4 text-gray-600">你们来到天文社观测台，地面上出现了一个巨大的几何图形阵列。中央控制台显示：</p>
+                                
+                                <div class="bg-primary/5 p-4 rounded-lg border border-primary/10 mb-6">
+                                    <p class="text-accent font-medium mb-2">正在加载题目内容...</p>
+                                    <div class="mt-4">
+                                        <select id="puzzle-1-answer" class="w-full p-2 bg-white border border-gray-200 rounded-lg mb-2 focus:border-accent focus:outline-none">
+                                            <option value="">请选择正确的选项</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="C">C</option>
+                                            <option value="D">D</option>
+                                        </select>
+                                        <button id="check-puzzle-1" class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors">
+                                            提交答案
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-1-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="scene-1-reward" class="hidden">
+                                    <div class="bg-accent/5 p-4 rounded-lg border border-accent/20 mb-6">
+                                        <h4 class="font-bold flex items-center mb-2 text-accent">
+                                            <i class="fa fa-trophy mr-2"></i> 获得第一块水晶
+                                        </h4>
+                                        <div class="flex items-center">
+                                            <div class="w-16 h-16 rounded-full crystal-blue flex items-center justify-center mr-4 glow-border">
+                                                <i class="fa fa-diamond text-white text-2xl"></i>
+                                            </div>
+                                            <p class="text-gray-600">
+                                                当大家站到C矩形的五个关键点时，地面亮起蓝光，第一块水晶从中心升起！
+                                                控制台显示："很好！下一块水晶需要'永恒之数'的能量才能解锁。"
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all" data-next="2">
+                                            前往第二幕：能量序列 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第二幕：能量序列 -->
+                    <div id="scene-2" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=21" alt="能量转换器" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold font-display mb-1">第二幕：能量序列</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-neutral border border-gray-100 p-5 rounded-xl mb-6">
+                                <p class="mb-4 text-gray-600">第一块水晶被放置在控制台后，屏幕上出现了一串神秘数字序列：</p>
+                                
+                                <div class="bg-primary/5 p-4 rounded-lg border border-primary/10 mb-6">
+                                    <p class="text-accent font-medium mb-3">正在加载题目内容...</p>
+                                    <div class="mt-4">
+                                        <input type="number" id="puzzle-2-answer" class="w-full p-2 bg-white border border-gray-200 rounded-lg mb-2 focus:border-accent focus:outline-none" placeholder="输入答案">
+                                        <button id="check-puzzle-2" class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors">
+                                            输入能量密码
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-2-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="scene-2-reward" class="hidden">
+                                    <div class="bg-accent/5 p-4 rounded-lg border border-accent/20 mb-6">
+                                        <h4 class="font-bold flex items-center mb-2 text-accent">
+                                            <i class="fa fa-trophy mr-2"></i> 获得第二块水晶
+                                        </h4>
+                                        <div class="flex items-center">
+                                            <div class="w-16 h-16 rounded-full crystal-green flex items-center justify-center mr-4 glow-border">
+                                                <i class="fa fa-diamond text-white text-2xl"></i>
+                                            </div>
+                                            <p class="text-gray-600">
+                                                能量转换器绿灯亮起！第二块水晶从装置中升起。全息投影显示：
+                                                "太棒了！最后一块水晶在时空坐标中，需要解出函数交点才能定位。"
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all" data-next="3">
+                                            前往第三幕：时空坐标 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第三幕：时空坐标 -->
+                    <div id="scene-3" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=22" alt="三维坐标系" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold font-display mb-1">第三幕：时空坐标</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-neutral border border-gray-100 p-5 rounded-xl mb-6">
+                                <p class="mb-4 text-gray-600">两块水晶放入控制台后，一个巨大的三维坐标系在地面展开。系统提示：</p>
+                                
+                                <div class="bg-primary/5 p-4 rounded-lg border border-primary/10 mb-6">
+                                    <p class="text-accent font-medium mb-3">正在加载题目内容...</p>
+
+                                    <div class="grid grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label class="block text-sm text-gray-500 mb-1">x值</label>
+                                            <input type="number" step="0.1" id="puzzle-3-x" class="w-full p-2 bg-white border border-gray-200 rounded-lg focus:border-accent focus:outline-none" placeholder="请输入答案">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-gray-500 mb-1">y值</label>
+                                            <input type="number" step="0.1" id="puzzle-3-y" class="w-full p-2 bg-white border border-gray-200 rounded-lg focus:border-accent focus:outline-none" placeholder="请输入答案">
+                                        </div>
+                                    </div>
+                                    
+                                    <button id="check-puzzle-3" class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors">
+                                        定位时空坐标
+                                    </button>
+                                </div>
+                                
+                                <div id="puzzle-3-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="scene-3-reward" class="hidden">
+                                    <div class="bg-accent/5 p-4 rounded-lg border border-accent/20 mb-6">
+                                        <h4 class="font-bold flex items-center mb-2 text-accent">
+                                            <i class="fa fa-trophy mr-2"></i> 获得第三块水晶
+                                        </h4>
+                                        <div class="flex items-center">
+                                            <div class="w-16 h-16 rounded-full crystal-red flex items-center justify-center mr-4 glow-border">
+                                                <i class="fa fa-diamond text-white text-2xl"></i>
+                                            </div>
+                                            <p class="text-gray-600">
+                                                你们根据计算出的坐标，在地面坐标系中找到了最后一块水晶！三块水晶集齐，
+                                                控制台显示还需要解开颜色密码才能激活辅助能量。
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all" data-next="4">
+                                            前往第四幕：颜色密码 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第四幕：颜色密码破译 -->
+                    <div id="scene-4" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=23" alt="颜色密码面板" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold font-display mb-1">第四幕：颜色密码破译</h3>
+                                    <p>破解周期性颜色序列</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-neutral border border-gray-100 p-5 rounded-xl mb-6">
+                                <p class="mb-4 text-gray-600">三块水晶被放置在控制台后，屏幕上出现了一组彩色密码序列：</p>
+                                
+                                <div class="bg-primary/5 p-4 rounded-lg border border-primary/10 mb-6">
+                                    <p class="text-accent font-medium mb-3">正在加载题目内容...</p>
+                                    <div class="grid grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <select id="puzzle-4-color1" class="w-full p-2 bg-white border border-gray-200 rounded-lg focus:border-accent focus:outline-none">
+                                                <option value="">请选择颜色</option>
+                                                <option value="红">红</option>
+                                                <option value="黄">黄</option>
+                                                <option value="绿">绿</option>
+                                                <option value="蓝">蓝</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button id="check-puzzle-4" class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors">
+                                        验证颜色密码
+                                    </button>
+                                </div>
+                                
+                                <div id="puzzle-4-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="scene-4-reward" class="hidden">
+                                    <div class="bg-accent/5 p-4 rounded-lg border border-accent/20 mb-6">
+                                        <h4 class="font-bold flex items-center mb-2 text-accent">
+                                            <i class="fa fa-trophy mr-2"></i> 获得第四块水晶
+                                        </h4>
+                                        <div class="flex items-center">
+                                            <div class="w-16 h-16 rounded-full crystal-purple flex items-center justify-center mr-4 glow-border">
+                                                <i class="fa fa-diamond text-white text-2xl"></i>
+                                            </div>
+                                            <p class="text-gray-600">
+                                                颜色密码验证成功！紫色辅助水晶从控制台升起。系统提示：
+                                                "最后一步需要调配正确的光谱能量，才能完成核心重组。"
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all" data-next="5">
+                                            前往水晶重组 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 结局：水晶重组 -->
+                    <div id="victory" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=25" alt="水晶重组" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold font-display mb-1">能量核心重组成功</h3>
+                                    <p>时空旅人的感谢</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-neutral border border-gray-100 p-5 rounded-xl mb-6 text-center">
+                                <div class="flex justify-center gap-4 my-6">
+                                    <div class="w-16 h-16 rounded-full crystal-blue flex items-center justify-center glow-border float">
+                                        <i class="fa fa-diamond text-white text-2xl"></i>
+                                    </div>
+                                    <div class="w-16 h-16 rounded-full crystal-green flex items-center justify-center glow-border float" style="animation-delay: 0.2s">
+                                        <i class="fa fa-diamond text-white text-2xl"></i>
+                                    </div>
+                                    <div class="w-16 h-16 rounded-full crystal-red flex items-center justify-center glow-border float" style="animation-delay: 0.4s">
+                                        <i class="fa fa-diamond text-white text-2xl"></i>
+                                    </div>
+                                    <div class="w-16 h-16 rounded-full crystal-purple flex items-center justify-center glow-border float" style="animation-delay: 0.6s">
+                                        <i class="fa fa-diamond text-white text-2xl"></i>
+                                    </div>
+                                    <div class="w-16 h-16 rounded-full crystal-yellow flex items-center justify-center glow-border float" style="animation-delay: 0.8s">
+                                        <i class="fa fa-diamond text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="text-2xl font-bold font-display mb-4 text-accent text-glow">任务完成！</h3>
+                                
+                                <p class="text-gray-600 mb-6">
+                                    五块水晶被放置在一起，光芒大盛，形成一个稳定的能量场。时空旅人的虚影在光芒中显现：
+                                </p>
+                                
+                                <div class="bg-gray-50 p-5 rounded-xl border border-accent/20 mb-6 italic text-gray-600">
+                                    "感谢你们，勇敢的年轻人！是你们的数学智慧救了我。数学是宇宙的通用语言，
+                                    是连接不同文明的桥梁。这是我的一点心意，希望能帮助你们继续探索数学的奥秘。"
+                                </div>
+                                
+                                <p class="text-gray-600 mb-8">
+                                    旅人留下了一本"宇宙数学宝典"，随后随着光芒一起消失在夜空中。你们成功完成了使命，
+                                    也对数学的力量有了更深的理解。
+                                </p>
+                                
+                                <button id="restart-mission" class="px-6 py-3 bg-accent text-white rounded-lg hover:bg-accent/90 transition-all">
+                                    重新开始任务 <i class="fa fa-refresh ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 初始化时隐藏默认题目，显示加载状态
+            initializeQuestionLoading();
+            
+            // 修复：调用正确的函数名
+            fetchQuestionsFromAPI();
+        });
+
+        // 初始化题目加载状态
+        function initializeQuestionLoading() {
+            // 隐藏默认题目内容
+            const questionElements = document.querySelectorAll('.puzzle-card p:nth-of-type(2)');
+            const analysisElements = document.querySelectorAll('.puzzle-card p:nth-of-type(3)');
+            
+            // 清空内容并设置加载状态
+            [...questionElements, ...analysisElements].forEach(element => {
+                element.textContent = '';
+                element.style.color = '#999';
+            });
+            
+            // 为每个问题区域设置加载提示
+            questionElements.forEach((element, index) => {
+                element.textContent = `正在加载题目 ${index + 1}...`;
+            });
+        }
+        
+        // 从API获取题目数据 - 优化SSE解析，支持标准格式
+        async function fetchQuestionsFromAPI() {
+            try {
+                const workflow_id = "7560950545793433650";
+                const app_id = "7560910646750363686";
+                const pat = "sat_ZUvu7vrte22QySxTNgbO2PXp1xo5jJGOF8CaxtclU6NqxKBYZirfGVxdU6ir0Nik";
+                const apiUrl = "https://api.coze.cn/v1/workflow/stream_run";
+                const inputKnowledge = localStorage.getItem('mathKnowledge') || '有理数'; 
+
+                console.log('开始调用API获取题目数据...');
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${pat}`
+                    },
+                    body: JSON.stringify({
+                        workflow_id: workflow_id,
+                        app_id: app_id,
+                        parameters: {
+                            input: inputKnowledge
+                        }
+                    })
+                });
+                
+                console.log('API响应状态:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API错误响应:', errorText);
+                    throw new Error(`API请求失败: HTTP ${response.status}. 响应: ${errorText.substring(0, 200)}`);
+                }
+                
+                // 获取响应文本
+                const responseText = await response.text();
+                console.log('API返回的原始内容:', responseText);
+                
+                // 解析SSE格式的数据
+                let questionData;
+                try {
+                    // 提取所有data字段中的JSON数据
+                    const dataMatches = responseText.match(/data:\s*({.*?})(?=\s*(?:id:|event:|$))/gs);
+                    
+                    if (dataMatches && dataMatches.length > 0) {
+                        let outputArray = null;
+                        
+                        // 遍历所有data字段，寻找包含题目数据的数组
+                        for (const match of dataMatches) {
+                            const jsonStr = match.replace(/data:\s*/, '');
+                            try {
+                                const parsed = JSON.parse(jsonStr);
+                                console.log('解析到的SSE数据块:', parsed);
+                                
+                                // 检查content字段
+                                if (parsed.content) {
+                                    try {
+                                        // 尝试直接解析content
+                                        const contentData = typeof parsed.content === 'string' ? JSON.parse(parsed.content) : parsed.content;
+                                        
+                                        // 尝试多种可能的数据路径
+                                        if (contentData.output && Array.isArray(contentData.output) && contentData.output.length >= 4) {
+                                            outputArray = contentData.output;
+                                            break;
+                                        }
+                                        // 检查content是否直接是数组
+                                        else if (Array.isArray(contentData) && contentData.length >= 4) {
+                                            outputArray = contentData;
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        console.log('content解析失败:', e);
+                                    }
+                                }
+                                
+                                // 检查是否有直接的output数组
+                                 if (parsed.output && Array.isArray(parsed.output) && parsed.output.length >= 4) {
+                                    outputArray = parsed.output;
+                                    break;
+                                }
+                                
+                                // 检查parsed本身是否是数组
+                                if (Array.isArray(parsed) && parsed.length >= 4) {
+                                    outputArray = parsed;
+                                    break;
+                                }
+                            } catch (e) {
+                                console.log('单个数据块解析失败:', e);
+                            }
+                        }
+                        
+                        // 尝试提取任意数组数据
+                        if (!outputArray) {
+                            console.log('尝试从响应中提取任意数组数据...');
+                            try {
+                                // 如果整个响应是JSON格式
+                                const fullResponse = JSON.parse(responseText);
+                                if (fullResponse && Array.isArray(fullResponse) && fullResponse.length >= 4) {
+                                    outputArray = fullResponse;
+                                } else if (fullResponse && typeof fullResponse === 'object') {
+                                    // 遍历对象查找数组
+                                    for (const key in fullResponse) {
+                                        if (Array.isArray(fullResponse[key]) && fullResponse[key].length >= 4) {
+                                            outputArray = fullResponse[key];
+                                            break;
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                console.log('完整响应解析为JSON失败:', e);
+                            }
+                        }
+
+                        if (outputArray && Array.isArray(outputArray)) {
+                            questionData = outputArray;
+                            console.log('成功提取到题目数据:', questionData);
+                        } else {
+                            throw new Error('未找到有效的题目数据数组');
+                        }
+                    } else {
+                        // 如果没有data字段，尝试直接解析整个响应
+                        try {
+                            const fullResponse = JSON.parse(responseText);
+                            if (Array.isArray(fullResponse) && fullResponse.length >= 4) {
+                                questionData = fullResponse;
+                                console.log('直接解析响应获取到题目数据:', questionData);
+                            } else {
+                                throw new Error('未找到任何data字段且响应不是有效数组');
+                            }
+                        } catch (e) {
+                            throw new Error('未找到任何data字段且无法解析响应');
+                        }
+                    }
+                } catch (parseError) {
+                    console.error('SSE解析失败:', parseError);
+                    throw parseError; // 重新抛出错误
+                }
+                
+                // 验证数据格式
+                if (!Array.isArray(questionData)) {
+                    throw new Error('API返回的数据格式不符合预期，不是数组');
+                }
+                
+                if (questionData.length < 8) {
+                    throw new Error(`API返回的数据不完整，需要至少6个元素，但实际收到${questionData.length}个元素`);
+                }
+                
+                // 更新页面显示
+                updateQuestions(questionData);
+                console.log('题目数据加载成功，数据格式：[题目1, 解析1, 题目2, 解析2, 题目3, 解析3, 题目4, 解析4]');
+                
+            } catch (error) {
+                console.error('加载题目数据失败:', error);
+                
+                let errorMessage = '题目加载失败';
+                if (error.message.includes('ERR_NAME_NOT_RESOLVED')) {
+                    errorMessage = '无法连接到API服务器，请检查URL是否正确';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = '网络连接失败，请检查您的网络设置';
+                } else {
+                    errorMessage += ': ' + error.message;
+                }
+                
+                displayError(errorMessage);
+                provideRetryOption();
+            }
+        }
+
+        // 更新页面上的题目内容
+        function updateQuestions(questionData) {
+            console.log('updateQuestions被调用，数据长度:', questionData.length);
+            console.log('题目数据内容:', questionData);
+            
+            // 场景1 - 信号解码
+            console.log('更新场景1，题目内容:', questionData[0], '解析内容:', questionData[1]);
+            updateQuestionElement('#scene-1', questionData[0], questionData[1]);
+            
+            // 场景2 - 能量序列
+            console.log('更新场景2，题目内容:', questionData[2], '解析内容:', questionData[3]);
+            updateQuestionElement('#scene-2', questionData[2], questionData[3]);
+            
+            // 场景3 - 时空坐标
+            console.log('更新场景3，题目内容:', questionData[4], '解析内容:', questionData[5]);
+            updateQuestionElement('#scene-3', questionData[4], questionData[5]);
+
+            // 场景4 - 颜色密码
+            console.log('更新场景4，题目内容:', questionData[6], '解析内容:', questionData[7]);
+            updateQuestionElement('#scene-4', questionData[6], questionData[7]);
+        }
+        
+        // 更新单个问题区域的内容
+        function updateQuestionElement(sceneSelector, questionContent, analysisContent) {
+            console.log(`更新${sceneSelector}：题目内容="${questionContent}"`);
+            
+            // 查找题目内容p元素（显示"正在加载题目内容..."的那个）
+            const existingPElement = document.querySelector(`${sceneSelector} .bg-primary\\/5 p:nth-of-type(1)`);
+            
+            if (existingPElement) {
+                console.log(`找到现有p元素，更新题目内容: "${questionContent}"`);
+                // 更新现有p元素的内容
+                existingPElement.textContent = questionContent;
+                existingPElement.style.color = '#333';
+                
+                // 存储解析内容到data属性，供答案验证时使用
+                existingPElement.setAttribute('data-analysis', analysisContent);
+                
+                // 添加调试样式
+                existingPElement.style.backgroundColor = '#ffffcc';
+                setTimeout(() => {
+                    existingPElement.style.backgroundColor = '';
+                }, 1000);
+                
+                console.log(`成功更新题目内容`);
+            } else {
+                console.error(`未找到现有p元素在: ${sceneSelector} .bg-primary\\/5 p:nth-of-type(1)`);
+                // 尝试查找所有p元素作为备用
+                const allPElements = document.querySelectorAll(`${sceneSelector} .bg-primary\\/5 p`);
+                console.log(`${sceneSelector} .bg-primary\\/5 中找到 ${allPElements.length} 个p元素`);
+                allPElements.forEach((p, index) => {
+                    console.log(`p元素${index + 1}: "${p.textContent.substring(0, 50)}..."`);
+                });
+            }
+        }
+        
+        // 获取题目解析内容
+        function getAnalysisContent(sceneId) {
+            const questionElement = document.querySelector(`#scene-${sceneId} .bg-primary\\/5 p:nth-of-type(1)`);
+            return questionElement ? questionElement.getAttribute('data-analysis') : '';
+        }
+
+        // 显示错误信息
+        function displayError(message) {
+        const questionElements = document.querySelectorAll('.puzzle-card p:nth-of-type(2)');
+        
+        // 为第一个问题显示错误信息，其他问题保持加载状态
+        if (questionElements.length > 0) {
+        questionElements[0].textContent = message;
+        questionElements[0].style.color = '#ff0000';
+        }
+        
+        // 添加错误通知
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-20 right-20 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // 3秒后自动移除通知
+        setTimeout(() => {
+        notification.remove();
+        }, 3000);
+        }
+        
+        // 提供重试选项
+        function provideRetryOption() {
+        // 检查是否已存在重试按钮
+        if (document.querySelector('#retry-button')) {
+        return;
+        }
+        
+        const retryButton = document.createElement('button');
+        retryButton.id = 'retry-button';
+        retryButton.className = 'fixed bottom-10 right-10 bg-primary text-white px-6 py-3 rounded-lg shadow-lg z-50 hover:bg-primary/90 transition-colors';
+        retryButton.textContent = '重试加载题目';
+        
+        retryButton.addEventListener('click', function() {
+        // 重置状态
+        initializeQuestionLoading();
+        
+        // 修复：调用正确的函数名
+        fetchQuestionsFromAPI();
+        });
+        
+        document.body.appendChild(retryButton);
+        }
+        
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow');
+                navbar.classList.remove('py-3', 'shadow-sm');
+            } else {
+                navbar.classList.add('py-3', 'shadow-sm');
+                navbar.classList.remove('py-2', 'shadow');
+            }
+        });
+
+        // 游戏逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 元素获取
+            // 元素获取
+            const startBtn = document.getElementById('start-mission');
+            const restartBtn = document.getElementById('restart-mission');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            // 添加缺失的变量定义
+            const playAgainBtn = document.getElementById('restart-mission');
+            const gameStart = document.getElementById('game-start');
+            const scenes = {
+                1: document.getElementById('scene-1'),
+                2: document.getElementById('scene-2'),
+                3: document.getElementById('scene-3'),
+                4: document.getElementById('scene-4'),
+                victory: document.getElementById('victory')
+            };
+            
+            // 初始场景
+            let currentScene = 0;
+            
+            // 更新场景显示
+            function showScene(index) {
+                // 隐藏所有场景
+                scenes.forEach(scene => {
+                    document.getElementById(scene).classList.add('hidden');
+                });
+                
+                // 显示目标场景
+                document.getElementById(scenes[index]).classList.remove('hidden');
+                currentScene = index;
+                
+                // 更新进度
+                updateProgress(index);
+            }
+            // 开始游戏
+            startBtn.addEventListener('click', function() {
+                gameStart.classList.add('hidden');
+                scenes[1].classList.remove('hidden');
+                scenes[1].classList.add('animate-fadeIn');
+                updateProgress(1);
+            });
+            
+            // 第一题逻辑
+            document.getElementById('check-puzzle-1').addEventListener('click', function() {
+                const answer = document.getElementById('puzzle-1-answer').value;
+                const feedback = document.getElementById('puzzle-1-feedback');
+                
+                if (answer === 'C') {
+                    // 使用getAnalysisContent函数获取解析内容
+                    const analysisContent = getAnalysisContent(1);
+                    
+                    feedback.textContent = '恭喜！答案正确！解析：' + (analysisContent || '题目解析加载中...');
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                    // 移除对不存在的scene-1-clue元素的引用
+                    document.getElementById('scene-1-reward').classList.remove('hidden');
+                } else {
+                    feedback.textContent = '答案不正确，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+
+            // 第二题逻辑
+            document.getElementById('check-puzzle-2').addEventListener('click', function() {
+                const answer = parseInt(document.getElementById('puzzle-2-answer').value);
+                const feedback = document.getElementById('puzzle-2-feedback');
+                
+                if (answer === 17) {
+                    // 使用getAnalysisContent函数获取解析内容
+                    const analysisContent = getAnalysisContent(2);
+                    
+                    feedback.textContent = '恭喜！答案正确！解析：' + (analysisContent || '题目解析加载中...');
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                    // 移除对不存在的scene-2-clue元素的引用
+                    document.getElementById('scene-2-reward').classList.remove('hidden');
+                } else {
+                    feedback.textContent = '答案不正确，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+
+            // 第三题逻辑
+            document.getElementById('check-puzzle-3').addEventListener('click', function() {
+                const x = parseFloat(document.getElementById('puzzle-3-x').value);
+                const y = parseFloat(document.getElementById('puzzle-3-y').value);
+                const feedback = document.getElementById('puzzle-3-feedback');
+                
+                // 允许一定的误差范围
+                const xCorrect = Math.abs(x + 2.4) < 0.1;
+                const yCorrect = Math.abs(y + 3.8) < 0.1;
+                
+                if (xCorrect && yCorrect) {
+                    // 使用getAnalysisContent函数获取解析内容
+                    const analysisContent = getAnalysisContent(3);
+                    
+                    feedback.textContent = '恭喜！答案正确！解析：' + (analysisContent || '题目解析加载中...');
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                    // 移除对不存在的scene-3-clue元素的引用
+                    document.getElementById('scene-3-reward').classList.remove('hidden');
+                } else {
+                    feedback.textContent = '答案不正确，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+
+            // 第四题逻辑：颜色密码破译 - 修复类型错误
+            document.getElementById('check-puzzle-4').addEventListener('click', function() {
+            // 修复：更新ID从 puzzle-4-answer 改为 puzzle-4-color1
+            const color = document.getElementById('puzzle-4-color1').value;
+            const feedback = document.getElementById('puzzle-4-feedback');
+            
+            // 正确答案：红
+            if (color === '红') {
+                // 使用getAnalysisContent函数获取解析内容
+                const analysisContent = getAnalysisContent(4);
+                
+                feedback.textContent = '恭喜！答案正确！解析：' + (analysisContent || '题目解析加载中...');
+                feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                // 显示奖励区域
+                document.getElementById('scene-4-reward').classList.remove('hidden');
+            } else {
+                feedback.textContent = '答案不正确，请再试一次。';
+                feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+            }
+            
+            feedback.classList.remove('hidden');
+        });
+
+        // 下一场景按钮
+            document.querySelectorAll('.next-scene-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const currentScene = parseInt(this.closest('[id^="scene-"]').id.split('-')[1]);
+                    const nextScene = parseInt(this.getAttribute('data-next'));
+                    
+                    // 添加过渡动画
+                    scenes[currentScene].classList.add('opacity-0');
+                    setTimeout(() => {
+                        scenes[currentScene].classList.add('hidden');
+                        scenes[currentScene].classList.remove('opacity-0');
+                    
+                        // 如果是最后一个场景，显示胜利界面
+                        if (nextScene > Object.keys(scenes).length - 1) {
+                            scenes.victory.classList.remove('hidden');
+                            scenes.victory.classList.add('animate-fadeIn');
+                            updateProgress(5);
+                        } else {
+                            scenes[nextScene].classList.remove('hidden');
+                            scenes[nextScene].classList.add('animate-fadeIn');
+                            updateProgress(nextScene);
+                        }
+                     }, 300);
+                });
+            });
+            
+           // 重新开始
+            playAgainBtn.addEventListener('click', function() {
+                // 添加过渡动画
+                scenes.victory.classList.add('opacity-0');
+                setTimeout(() => {
+                    scenes.victory.classList.add('hidden');
+                    scenes.victory.classList.remove('opacity-0', 'animate-fadeIn');
+                    gameStart.classList.remove('hidden');
+                    resetPuzzles();
+                    updateProgress(0);
+                }, 300);
+            });
+            
+            // 更新进度
+            function updateProgress(level) {
+                const percentage = (level / 4) * 100;
+                // 使用动画效果更新进度条
+                setTimeout(() => {
+                    progressBar.style.width = `${percentage}%`;
+                }, 100);
+                progressText.textContent = `${level}/4`;
+            }
+            
+            // 重置谜题状态
+            function resetPuzzles() {
+                // 重置所有谜题输入和反馈
+                document.querySelectorAll('[id^="puzzle-"][id$="-answer"]').forEach(input => {
+                    input.value = '';
+                });
+                
+                document.querySelectorAll('[id^="puzzle-"][id$="-feedback"]').forEach(feedback => {
+                    feedback.classList.add('hidden');
+                    feedback.classList.remove('animate-pulse');
+                });
+                
+                document.querySelectorAll('[id^="scene-"][id$="-clue"]').forEach(clue => {
+                    clue.classList.add('hidden');
+                    clue.classList.remove('animate-fadeIn');
+                });
+                
+                // 隐藏所有场景
+                Object.values(scenes).forEach(scene => {
+                    scene.classList.add('hidden');
+                    scene.classList.remove('animate-fadeIn', 'opacity-0');
+                });
+            }   
+        });
+    </script>
+</body>
+</html>

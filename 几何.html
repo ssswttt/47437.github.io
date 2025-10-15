@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>立体拼合画板</title>
+    <link rel="stylesheet" href="theme.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4361ee',
+                        secondary: '#3f37c9',
+                        accent: '#4895ef',
+                        neutral: '#f8f9fa',
+                        success: '#2ecc71',
+                        warning: '#f39c12',
+                        danger: '#e74c3c',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        /* 字体重置 - 覆盖theme.css的字体设置 */
+        body {
+            font-family: 'Inter', 'system-ui', 'sans-serif' !important;
+        }
+        
+        .container, .piece-container, .instruction-panel {
+            font-family: inherit !important;
+        }
+        
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .drop-slot {
+                @apply w-16 h-16 border border-dashed border-gray-300 bg-gray-50 transition-all duration-200 flex items-center justify-center p-0 m-0;
+            }
+            /* 移除内边距和外边距，确保完全紧密排列 */
+            .drop-slot.highlight {
+                @apply border-primary bg-blue-50;
+            }
+            .drop-slot.filled {
+                @apply border-transparent bg-transparent;
+            }
+            .draggable-piece {
+                @apply cursor-move transition-all duration-200;
+            }
+            .dragging {
+                @apply opacity-50;
+            }
+            .shape-tab {
+                @apply px-4 py-2 rounded-t-lg transition-all duration-200;
+            }
+            .shape-tab.active {
+                @apply bg-primary text-white font-medium;
+            }
+            .piece-container {
+                @apply border border-gray-200 rounded-lg p-4 bg-white shadow-sm;
+                width: 420px; /* 或者固定宽度如 600px */
+                margin: 0 auto;
+            }
+            .instruction-panel {
+                @apply border border-gray-200 rounded-lg p-4 bg-white shadow-sm;
+            }
+        }
+        /* 添加右花括号闭合@layer utilities */
+        
+        /* 立体图形动画相关样式 */
+        .animation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .animation-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .animation-container {
+            background: white;
+border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .animation-close {
+            position: absolute;
+            top: 1rem;
+right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+            .animation-modal.show {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .animation-container {
+                background: white;
+                border-radius: 12px;
+                padding: 2rem;
+                max-width: 500px;
+                text-align: center;
+                position: relative;
+            }
+            
+            .animation-close {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #666;
+            }
+            
+            /* 3D变换容器 */
+            .shape-3d-container {
+                width: 200px;
+                height: 200px;
+                margin: 2rem auto;
+                perspective: 1000px;
+            }
+            
+            /* 正方体3D模型 */
+            .cube-3d {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                transform-style: preserve-3d;
+                animation: rotateCube 8s infinite linear;
+                transform: rotateX(45deg) rotateY(45deg);
+            }
+            
+            .cube-face {
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                background-color: rgba(253, 230, 138, 0.9);
+                border: 2px solid #FBBF24;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+            }
+            
+            .cube-front  { transform: translateZ(100px); }
+            .cube-back   { transform: rotateY(180deg) translateZ(100px); }
+            .cube-right  { transform: rotateY(90deg) translateZ(100px); }
+            .cube-left   { transform: rotateY(-90deg) translateZ(100px); }
+            .cube-top    { transform: rotateX(90deg) translateZ(100px); }
+            .cube-bottom { transform: rotateX(-90deg) translateZ(100px); }
+            
+            /* 长方体3D模型 */
+            .cuboid-3d {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                transform-style: preserve-3d;
+                animation: rotateCuboid 8s infinite linear;
+            }
+            
+            .cuboid-face {
+                position: absolute;
+                background-color: rgba(147, 197, 253, 0.9);
+                border: 2px solid #3B82F6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+            }
+            
+            .cuboid-front  { width: 200px; height: 120px; transform: translateZ(60px); }
+            .cuboid-back   { width: 200px; height: 120px; transform: rotateY(180deg) translateZ(60px); }
+            .cuboid-right  { width: 120px; height: 120px; transform: rotateY(90deg) translateZ(140px); }
+            .cuboid-left   { width: 120px; height: 120px; transform: rotateY(-90deg) translateZ(60px); }
+            .cuboid-top    { width: 200px; height: 120px; transform: rotateX(90deg) translateZ(60px); }
+            .cuboid-bottom { width: 200px; height: 120px; transform: rotateX(-90deg) translateZ(60px); }
+            
+            /* 三棱柱3D模型 */
+            .triangular-prism-3d {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                transform-style: preserve-3d;
+                animation: rotatePrism 8s infinite linear;
+            }
+            
+            .prism-triangle {
+                position: absolute;
+                width: 0;
+                height: 0;
+                border-left: 100px solid transparent;
+                border-right: 100px solid transparent;
+                border-bottom: 173px solid rgba(134, 239, 172, 0.9);
+                border-bottom-color: rgba(134, 239, 172, 0.9);
+                border-top: 0;
+                transform-origin: center bottom;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+            
+            .prism-front  { transform: translateZ(100px) translateY(40px); }
+            .prism-back   { transform: rotateY(180deg) translateZ(100px) translateY(40px); }
+            
+            .prism-rectangle {
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                background-color: rgba(147, 197, 253, 0.9);
+                border: 2px solid #3B82F6;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+            
+            .prism-right  { transform: rotateY(90deg) translateZ(50px) translateY(26px) rotateX(30deg); }
+            .prism-left   { transform: rotateY(-90deg) translateZ(50px) translateY(26px) rotateX(30deg);}
+            .prism-bottom { transform: rotateX(-90deg) translateZ(112.5px) rotateY(180deg) rotateZ(180deg); }
+        
+           /* 四棱锥3D模型 */
+            .pyramid-3d {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                transform-style: preserve-3d;
+                animation: rotatePyramid 12s infinite linear;
+                transform: rotateX(30deg) rotateY(30deg);
+            }
+
+            .pyramid-face {
+                position: absolute;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: white;
+            }
+
+            /* 四棱锥底面 - 正方形 */
+            .pyramid-base {
+                width: 160px;
+                height: 160px;
+                background-color: rgba(253, 230, 138, 0.9);
+                border: 2px solid #FBBF24;
+                transform: translateY(60px) rotateX(90deg);
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+
+            /* 四棱锥前面 - 三角形 */
+            .pyramid-front {
+                width: 0;
+                height: 0;
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                border-bottom: 140px solid rgba(134, 239, 172, 0.9);
+                border-top: 0;
+                /* 添加描边效果 */
+                border-bottom-width: 140px;
+                border-bottom-style: solid;
+                border-bottom-color: rgba(134, 239, 172, 0.9);
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                /* 为底部边框添加描边 */
+                filter: drop-shadow(0 0 2px rgba(46, 139, 87, 0.8));
+                transform: translateZ(80px) rotateX(35deg);
+                transform-origin: center bottom;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+            
+            /* 四棱锥后面 - 三角形 */
+            .pyramid-back {
+                width: 0;
+                height: 0;
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                border-bottom: 140px solid rgba(134, 239, 172, 0.9);
+                border-top: 0;
+                /* 添加描边效果 */
+                border-bottom-width: 140px;
+                border-bottom-style: solid;
+                border-bottom-color: rgba(134, 239, 172, 0.9);
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                /* 为底部边框添加描边 */
+                filter: drop-shadow(0 0 2px rgba(46, 139, 87, 0.8));
+                transform: translateZ(-80px) rotateX(-35deg) rotateY(180deg);
+                transform-origin: center bottom;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+            
+            /* 四棱锥左面 - 三角形 */
+            .pyramid-left {
+                width: 0;
+                height: 0;
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                border-bottom: 140px solid rgba(134, 239, 172, 0.9);
+                border-top: 0;
+                /* 添加描边效果 */
+                border-bottom-width: 140px;
+                border-bottom-style: solid;
+                border-bottom-color: rgba(134, 239, 172, 0.9);
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                /* 为底部边框添加描边 */
+                filter: drop-shadow(0 0 2px rgba(46, 139, 87, 0.8));
+                transform: translateX(-80px) rotateY(-90deg) rotateX(35deg);
+                transform-origin: center bottom;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+            
+            /* 四棱锥右面 - 三角形 */
+            .pyramid-right {
+                width: 0;
+                height: 0;
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                border-bottom: 140px solid rgba(134, 239, 172, 0.9);
+                border-top: 0;
+                /* 添加描边效果 */
+                border-bottom-width: 140px;
+                border-bottom-style: solid;
+                border-bottom-color: rgba(134, 239, 172, 0.9);
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                /* 为底部边框添加描边 */
+                filter: drop-shadow(0 0 2px rgba(46, 139, 87, 0.8));
+                transform: translateX(80px) rotateY(90deg) rotateX(35deg);
+                transform-origin: center bottom;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+
+            /* 动画关键帧 */
+            @keyframes rotateCube {
+                0% { transform: rotateX(45deg) rotateY(45deg); }
+                100% { transform: rotateX(45deg) rotateY(405deg); }
+            }
+            
+            @keyframes rotateCuboid {
+                0% { transform: rotateX(30deg) rotateY(30deg); }
+                100% { transform: rotateX(30deg) rotateY(390deg); }
+            }
+            
+            @keyframes rotatePrism {
+                0% { transform: rotateX(30deg) rotateY(30deg); }
+                100% { transform: rotateX(30deg) rotateY(390deg); }
+            }
+            
+            @keyframes rotateCylinder {
+                0% { transform: rotateX(30deg) rotateY(0deg); }
+                100% { transform: rotateX(30deg) rotateY(360deg); }
+            }
+
+            @keyframes rotatePyramid {
+                0% { transform: rotateX(30deg) rotateY(0); }
+                100% { transform: rotateX(30deg) rotateY(360deg); }
+            }
+
+            /* ####################### 核心：ChatSDK 样式隔离 ####################### */
+            /* 1. 备用重试按钮：固定右下角，匹配主色 */
+            #chat-retry-btn {
+                position: fixed !important;
+                right: 20px !important;
+                bottom: 20px !important;
+                width: 56px !important;
+                height: 56px !important;
+                border-radius: 50% !important;
+                color: white !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                z-index: 99999 !important;
+                font-size: 20px !important;
+                display: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important; /* 清除多余阴影 */
+                background-color: #4361ee !important; /* 匹配页面主色 */
+            }
+
+            /* 2. 聊天悬浮球：无阴影+固定尺寸 */
+            .coze-asst-btn {
+                right: 20px !important;
+                bottom: 20px !important;
+                visibility: visible !important;
+                z-index: 99999 !important;
+                opacity: 1 !important;
+                position: fixed !important;
+                width: 56px !important;
+                height: 56px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .coze-asst-btn .btn {
+                width: 56px !important;
+                height: 56px !important;
+                border-radius: 50% !important;
+                border: none !important;
+                padding: 0 !important;
+                box-shadow: none !important; /* 彻底清除阴影 */
+                background-color: #4361ee !important; /* 匹配页面主色 */
+            }
+
+            /* 3. 聊天窗口：固定宽度+无缩放+无阴影 */
+            .coze-chat-container {
+                width: 380px !important;
+                max-width: 380px !important; /* 禁止拉伸 */
+                border-radius: 12px !important;
+                z-index: 99998 !important;
+                box-shadow: none !important; /* 彻底清除阴影 */
+                position: fixed !important;
+                bottom: 86px !important;
+                right: 20px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                transform: none !important; /* 禁止默认缩放 */
+            }
+
+            /* 4. 聊天头部：无阴影+匹配主色 */
+            .coze-chat-header {
+                color: white !important;
+                padding: 0.5rem 1rem !important;
+                margin: 0 !important;
+                box-shadow: none !important; /* 清除头部阴影 */
+                background-color: #4361ee !important; /* 匹配页面主色 */
+            }
+
+            /* 兜底：禁止页面横向滚动 */
+            body {
+                overflow-x: hidden !important;
+            }
+        </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- 返回首页按钮 -->
+        <a href="home.html" class="absolute top-4 left-4 flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-all duration-300 shadow-md">
+            <i class="fa fa-home text-xl"></i>
+            <span>返回首页</span>
+        </a>
+        
+        <!-- 切换到函数画板按钮 -->
+        <a href="hanshu.html" class="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-all duration-300 shadow-md">
+            <i class="fa fa-line-chart text-xl"></i>
+            <span>函数画板</span>
+        </a>
+        
+        <h1 class="text-center text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-2">立体拼合画板</h1>
+        <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">选择立体图形，自由拼接展开图</p>
+        
+        <!-- 图形切换选项卡 -->
+        <div class="flex justify-center mb-6 bg-white p-2 rounded-t-lg shadow-sm">
+            <button class="shape-tab active mr-2" data-shape="cube">正方体</button>
+            <button class="shape-tab mr-2" data-shape="cuboid">长方体</button>
+            <button class="shape-tab mr-2" data-shape="triangular_prism">三棱柱</button>
+            <button class="shape-tab" data-shape="cylinder">四棱锥</button>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 左侧：组件库 -->
+            <div class="piece-container">
+                <h2 class="text-lg font-semibold mb-4">组件库</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="piece-library">
+                    <!-- 正方体组件 -->
+                    <div class="draggable-piece square p-2 bg-yellow-200 text-center rounded" draggable="true" data-piece-type="square">
+                        <svg width="60" height="60" viewBox="0 0 60 60" class="mx-auto">
+                            <rect x="5" y="5" width="50" height="50" fill="#FDE68A" stroke="#FBBF24" stroke-width="2"/>
+                        </svg>
+                        <span class="text-xs">正方形</span>
+                    </div>
+                    <!-- 长方体组件 -->
+                    <div class="draggable-piece rectangle p-2 bg-blue-200 rounded flex flex-col items-center justify-center" draggable="true" data-piece-type="rectangle">
+                        <svg width="60" height="30" viewBox="0 0 60 30">
+                            <rect x="5" y="5" width="50" height="20" fill="#93C5FD" stroke="#3B82F6" stroke-width="2"/>
+                        </svg>
+                        <span class="text-xs mt-1">长方形</span>
+                    </div>
+                    <!-- 三角形组件 -->
+                    <div class="draggable-piece triangle p-2 bg-green-200 text-center rounded" draggable="true" data-piece-type="triangle">
+                        <svg width="60" height="50" viewBox="0 0 60 50" class="mx-auto">
+                            <polygon points="30,5 55,45 5,45" fill="#86EFAC" stroke="#22C55E" stroke-width="2"/>
+                        </svg>
+                        <span class="text-xs">三角形</span>
+                    </div>
+                    <!-- 圆形组件 -->
+                    <div class="draggable-piece circle p-2 bg-purple-200 text-center rounded" draggable="true" data-piece-type="circle">
+                        <svg width="60" height="60" viewBox="0 0 60 60" class="mx-auto">
+                            <circle cx="30" cy="30" r="25" fill="#C4B5FD" stroke="#8B5CF6" stroke-width="2"/>
+                        </svg>
+                        <span class="text-xs">圆形</span>
+                    </div>
+                    <!-- 扇形组件 -->
+                    <div class="draggable-piece sector p-2 bg-red-200 text-center rounded" draggable="true" data-piece-type="sector">
+<svg width="60" height="60" viewBox="0 0 60 60" class="mx-auto">
+                            <path d="M30,30 L55,30 A25,25 0 0,1 30,55 Z" fill="#FCA5A5" stroke="#EF4444" stroke-width="2"/>
+                        </svg>
+                        <span class="text-xs">扇形</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 中间：拼接区域 -->
+            <div class="piece-container">
+                <h2 class="text-lg font-semibold mb-4">拼接区域</h2>
+                <div class="grid grid-cols-5 gap-0" id="splicing-area">
+                    <!-- 明确设置 gap-0 确保没有间隙 -->
+                    <!-- 5x5 网格拼接区域 -->
+                    <!-- 第一行 -->
+                    <div class="drop-slot" data-slot="1" data-position="1-1"></div>
+                    <div class="drop-slot" data-slot="2" data-position="1-2"></div>
+                    <div class="drop-slot" data-slot="3" data-position="1-3"></div>
+                    <div class="drop-slot" data-slot="4" data-position="1-4"></div>
+                    <div class="drop-slot" data-slot="5" data-position="1-5"></div>
+                    <!-- 第二行 -->
+                    <div class="drop-slot" data-slot="6" data-position="2-1"></div>
+                    <div class="drop-slot" data-slot="7" data-position="2-2"></div>
+                    <div class="drop-slot" data-slot="8" data-position="2-3"></div>
+                    <div class="drop-slot" data-slot="9" data-position="2-4"></div>
+                    <div class="drop-slot" data-slot="10" data-position="2-5"></div>
+                    <!-- 第三行 -->
+                    <div class="drop-slot" data-slot="11" data-position="3-1"></div>
+                    <div class="drop-slot" data-slot="12" data-position="3-2"></div>
+                    <div class="drop-slot" data-slot="13" data-position="3-3"></div>
+                    <div class="drop-slot" data-slot="14" data-position="3-4"></div>
+                    <div class="drop-slot" data-slot="15" data-position="3-5"></div>
+                    <!-- 第四行 -->
+                    <div class="drop-slot" data-slot="16" data-position="4-1"></div>
+                    <div class="drop-slot" data-slot="17" data-position="4-2"></div>
+                    <div class="drop-slot" data-slot="18" data-position="4-3"></div>
+                    <div class="drop-slot" data-slot="19" data-position="4-4"></div>
+                    <div class="drop-slot" data-slot="20" data-position="4-5"></div>
+                    <!-- 第五行 -->
+                    <div class="drop-slot" data-slot="21" data-position="5-1"></div>
+                    <div class="drop-slot" data-slot="22" data-position="5-2"></div>
+                    <div class="drop-slot" data-slot="23" data-position="5-3"></div>
+                    <div class="drop-slot" data-slot="24" data-position="5-4"></div>
+                    <div class="drop-slot" data-slot="25" data-position="5-5"></div>
+                </div>
+                
+                <!-- 操作按钮区域 -->
+                <div class="flex justify-center mt-4 space-x-4">
+                    <button id="check-btn" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                        <i class="fa fa-check mr-1"></i> 检查拼接
+                    </button>
+                    <button id="clear-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200">
+                        <i class="fa fa-refresh mr-1"></i> 清空区域
+                    </button>
+                    <button id="show-example-btn" class="bg-accent hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                        <i class="fa fa-lightbulb-o mr-1"></i> 显示示例
+                    </button>
+                </div>
+                
+                <!-- 结果反馈区域 -->
+                <div id="result-feedback" class="mt-4 text-center p-3 rounded-lg hidden"></div>
+            </div>
+            
+            <!-- 右侧：说明和知识点 -->
+            <div class="instruction-panel">
+                <h2 class="text-lg font-semibold mb-4">拼接说明</h2>
+                <div id="shape-instruction" class="text-sm space-y-4">
+                    <!-- 正方体说明 -->
+                    <div class="shape-content cube">
+                        <p class="mb-2 font-medium">正方体展开式拼接</p>
+                        <p>正方体由6个相同的正方形面组成。尝试拼接一个正方体的展开式，共有11种不同的展开方式。</p>
+                    </div>
+                    
+                    <!-- 知识点 -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <h3 class="font-medium mb-2">知识点</h3>
+                        <ul class="list-disc list-inside text-sm space-y-1">
+                            <li>正方体有6个面，12条棱，8个顶点</li>
+                            <li>正方体的每个面都是正方形</li>
+                            <li>正方体的所有棱长都相等</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ####################### ChatSDK 相关元素 ####################### -->
+    <!-- 1. ChatSDK 加载失败备用按钮 -->
+    <div id="chat-retry-btn">
+        <i class="fa fa-comment-dots"></i>
+    </div>
+
+    <!-- 2. 引入独立的ChatSDK JS文件 -->
+    <script src="chat-sdk.js"></script>
+    
+    <script>
+        // 全局状态管理
+        const splicingState = {
+            currentShape: 'cube',
+            placedPieces: {}, // 存储已放置的组件信息
+            draggedPiece: null // 当前正在拖拽的组件
+        };
+        
+        // 初始化拖拽功能
+        function initDragAndDrop() {
+            const draggablePieces = document.querySelectorAll('.draggable-piece');
+            const dropSlots = document.querySelectorAll('.drop-slot');
+            
+            // 设置拖拽源
+            draggablePieces.forEach(piece => {
+                piece.addEventListener('dragstart', handleDragStart);
+                piece.addEventListener('dragend', handleDragEnd);
+            });
+            
+            // 设置放置目标
+            dropSlots.forEach(slot => {
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('dragleave', handleDragLeave);
+                slot.addEventListener('drop', handleDrop);
+            });
+        }
+        
+        // 拖拽开始处理
+        function handleDragStart(e) {
+            // 如果是从组件库拖拽的新组件
+            if (this.parentElement.id === 'piece-library') {
+                // 设置拖拽的数据
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    type: this.dataset.pieceType,
+                    isNew: true
+                }));
+            } else {
+                // 如果是从某个槽位拖拽的已有组件
+                const slot = this.closest('.drop-slot');
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    type: this.dataset.pieceType,
+                    isNew: false,
+                    fromSlot: slot.dataset.slot
+                }));
+                
+                // 记录被拖拽的组件
+                splicingState.draggedPiece = this;
+            }
+            
+            // 添加拖拽样式
+            this.classList.add('dragging');
+            
+            // 自定义拖拽时显示的图像，只显示SVG图形
+            const svg = this.querySelector('svg');
+            if (svg) {
+                // 创建一个临时元素用于拖拽显示
+                const dragImage = svg.cloneNode(true);
+                dragImage.style.position = 'absolute';
+                dragImage.style.top = '-1000px';
+                dragImage.style.left = '-1000px';
+                document.body.appendChild(dragImage);
+                
+                // 设置拖拽图像
+                e.dataTransfer.setDragImage(dragImage, dragImage.width / 2, dragImage.height / 2);
+                
+                // 拖拽结束后移除临时元素
+                setTimeout(() => {
+                    if (document.body.contains(dragImage)) {
+                        document.body.removeChild(dragImage);
+                    }
+                }, 0);
+            }
+        }
+        
+        // 拖拽结束处理
+        function handleDragEnd() {
+            // 移除拖拽样式
+            this.classList.remove('dragging');
+            
+            // 重置拖拽状态
+            splicingState.draggedPiece = null;
+        }
+        
+        // 拖拽悬停处理
+        function handleDragOver(e) {
+            e.preventDefault(); // 允许放置
+            this.classList.add('highlight');
+        }
+        
+        // 拖拽离开处理
+        function handleDragLeave() {
+            this.classList.remove('highlight');
+        }
+        
+        // 放置处理
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('highlight');
+            
+            const slotId = this.dataset.slot;
+            const pieceData = JSON.parse(e.dataTransfer.getData('text/plain'));
+            
+            // 如果是从槽位拖拽的已有组件，先清理原位置
+            if (!pieceData.isNew && pieceData.fromSlot !== slotId) {
+                const fromSlot = document.querySelector(`[data-slot="${pieceData.fromSlot}"]`);
+                if (fromSlot) {
+                    fromSlot.innerHTML = '';
+                    fromSlot.classList.remove('filled');
+                    delete splicingState.placedPieces[pieceData.fromSlot];
+                }
+            }
+            
+            // 如果目标槽位已被占用，不做任何操作
+            if (this.hasChildNodes() && pieceData.isNew) {
+                return;
+            }
+            
+            // 清理目标槽位
+            this.innerHTML = '';
+            
+            // 克隆组件（从组件库或拖拽的组件）
+            let pieceToPlace;
+            if (pieceData.isNew) {
+                const originalPiece = document.querySelector(`[data-piece-type="${pieceData.type}"]`);
+                pieceToPlace = originalPiece.cloneNode(true);
+            } else if (splicingState.draggedPiece) {
+                pieceToPlace = splicingState.draggedPiece.cloneNode(true);
+            }
+            
+            if (pieceToPlace) {
+                // 设置组件样式使其与方格大小一致
+                pieceToPlace.style.width = '100%';
+                pieceToPlace.style.height = '100%';
+                pieceToPlace.style.margin = '0';
+                pieceToPlace.style.padding = '0';
+                pieceToPlace.classList.remove('mx-auto');
+                
+                // 确保组件可以再次被拖拽
+                pieceToPlace.setAttribute('draggable', 'true');
+                pieceToPlace.addEventListener('dragstart', handleDragStart);
+                pieceToPlace.addEventListener('dragend', handleDragEnd);
+                
+                // 调整组件内的SVG大小
+                const svg = pieceToPlace.querySelector('svg');
+                if (svg) {
+                    svg.style.width = '100%';
+                    svg.style.height = '100%';
+                    svg.style.display = 'block';
+                    svg.style.margin = 'auto';
+                }
+                
+                // 隐藏标签文字
+                const label = pieceToPlace.querySelector('span');
+                if (label) {
+                    label.style.display = 'none';
+                }
+                
+                // 添加到槽位
+                this.appendChild(pieceToPlace);
+                
+                // 更新槽位状态
+                this.classList.add('filled');
+                
+                // 更新放置状态
+                splicingState.placedPieces[slotId] = {
+                    type: pieceData.type
+                };
+            }
+        }
+        
+        // 初始化按钮功能
+        function initButtons() {
+            const checkBtn = document.getElementById('check-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const showExampleBtn = document.getElementById('show-example-btn');
+            const shapeTabs = document.querySelectorAll('.shape-tab');
+            
+            // 检查拼接按钮
+            checkBtn.addEventListener('click', checkSplicing);
+            
+            // 清空区域按钮
+            clearBtn.addEventListener('click', clearSplicingArea);
+            
+            // 显示示例按钮
+            showExampleBtn.addEventListener('click', showExample);
+            
+            // 图形切换选项卡
+            shapeTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 更新选中状态
+                    shapeTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // 更新当前图形类型
+                    splicingState.currentShape = tab.dataset.shape;
+                    
+                    // 更新说明和知识点
+                    updateInstructionsAndKnowledge();
+                    
+                    // 清空拼接区域
+                    clearSplicingArea();
+                });
+            });
+        }
+        
+        // 更新说明和知识点
+        function updateInstructionsAndKnowledge() {
+            const instructionContainer = document.getElementById('shape-instruction');
+            instructionContainer.innerHTML = '';
+            
+            // 根据当前图形类型生成相应的说明
+            let content = '';
+            
+            switch (splicingState.currentShape) {
+                case 'cube':
+                    content = `
+                        <div class="shape-content cube">
+                            <p class="mb-2 font-medium">正方体展开式拼接</p>
+                            <p>正方体由6个相同的正方形面组成。尝试拼接一个正方体的展开式，共有11种不同的展开方式。</p>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h3 class="font-medium mb-2">知识点</h3>
+                            <ul class="list-disc list-inside text-sm space-y-1">
+                                <li>正方体有6个面，12条棱，8个顶点</li>
+                                <li>正方体的每个面都是正方形</li>
+                                <li>正方体的所有棱长都相等</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'cuboid':
+                    content = `
+                        <div class="shape-content cuboid">
+                            <p class="mb-2 font-medium">长方体展开式拼接</p>
+                            <p>长方体由6个长方形面组成（可能有两个相对的面是正方形）。尝试拼接一个长方体的展开式。</p>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h3 class="font-medium mb-2">知识点</h3>
+                            <ul class="list-disc list-inside text-sm space-y-1">
+                                <li>长方体有6个面，12条棱，8个顶点</li>
+                                <li>相对的面面积相等</li>
+                                <li>相对的棱长度相等</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'triangular_prism':
+                    content = `
+                        <div class="shape-content triangular_prism">
+                            <p class="mb-2 font-medium">三棱柱展开式拼接</p>
+                            <p>三棱柱由2个三角形底面和3个长方形侧面组成。尝试拼接一个三棱柱的展开式。</p>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h3 class="font-medium mb-2">知识点</h3>
+                            <ul class="list-disc list-inside text-sm space-y-1">
+                                <li>三棱柱有5个面，9条棱，6个顶点</li>
+                                <li>两个底面是全等的三角形</li>
+                                <li>三个侧面都是平行四边形</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+                case 'cylinder':
+                    content = `
+                        <div class="shape-content cylinder">
+                            <p class="mb-2 font-medium">四棱锥展开式拼接</p>
+                            <p>四棱锥由1个正方形底面和4个三角形侧面组成。尝试拼接一个四棱锥的展开式。</p>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h3 class="font-medium mb-2">知识点</h3>
+                            <ul class="list-disc list-inside text-sm space-y-1">
+                                <li>四棱锥有5个面：1个正方形底面 + 4个三角形侧面</li>
+                                <li>所有侧面都是全等的等腰三角形</li>
+                                <li>顶点到底面的垂直距离称为高</li>
+                                <li>底面边长和侧面三角形的高决定四棱锥的形状</li>
+                            </ul>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            instructionContainer.innerHTML = content;
+        }
+        
+        // 检查拼接结果
+        function checkSplicing() {
+            const feedbackElement = document.getElementById('result-feedback');
+            feedbackElement.classList.remove('hidden', 'bg-success', 'bg-danger');
+            
+            // 简单的检查逻辑 - 根据不同图形需要不同的检查规则
+            let isCorrect = false;
+            
+            switch (splicingState.currentShape) {
+                case 'cube':
+                    // 正方体需要6个正方形
+                    const squareCount = Object.values(splicingState.placedPieces).filter(p => p.type === 'square').length;
+                    isCorrect = squareCount === 6 && isPatternMatch('cube');
+                    break;
+                case 'cuboid':
+                    // 长方体需要6个矩形（可能是长方形或正方形）
+                    const rectCount = Object.values(splicingState.placedPieces).filter(p => 
+                        p.type === 'rectangle' || p.type === 'square'
+                    ).length;
+                    isCorrect = rectCount === 6 && isPatternMatch('cuboid');
+                    break;
+                case 'triangular_prism':
+                    // 三棱柱需要2个三角形和3个长方形
+                    const triangleCount = Object.values(splicingState.placedPieces).filter(p => p.type === 'triangle').length;
+                    const rectCountForPrism = Object.values(splicingState.placedPieces).filter(p => p.type === 'rectangle').length;
+                    isCorrect = triangleCount === 2 && rectCountForPrism === 3 && isPatternMatch('triangular_prism');
+                    break;
+                case 'cylinder':
+                    // 修改变量名，避免重复声明
+                    const pyramidSquareCount = Object.values(splicingState.placedPieces).filter(p => 
+                        p.type === 'square' || p.type === 'rectangle'
+                    ).length;
+                    const pyramidTriangleCount = Object.values(splicingState.placedPieces).filter(p => 
+                        p.type === 'triangle'
+                    ).length;
+                    isCorrect = pyramidSquareCount === 1 && pyramidTriangleCount === 4 && isPatternMatch('pyramid');
+                    break;
+            }
+            
+            if (isCorrect) {
+                feedbackElement.textContent = '拼接正确！恭喜你成功拼出了' + getShapeName(splicingState.currentShape) + '的展开式。';
+                feedbackElement.classList.add('bg-success', 'text-white');
+                
+                // 显示立体图形动画
+                showShapeAnimation(splicingState.currentShape);
+            } else {
+                feedbackElement.textContent = '拼接不正确，请再尝试一下。';
+                feedbackElement.classList.add('bg-danger', 'text-white');
+            }
+        }
+            
+        // 检查模式是否匹配（完整的排列判断逻辑）
+        function isPatternMatch(shapeType) {
+            const placedSlots = Object.keys(splicingState.placedPieces).map(Number);
+            const totalPieces = placedSlots.length;
+            
+            // 如果没有放置任何组件，直接返回false
+            if (totalPieces === 0) return false;
+            
+            switch (shapeType) {
+                case 'cube':
+                    return isValidCubePattern(placedSlots);
+                case 'cuboid':
+                    return isValidCuboidPattern(placedSlots);
+                case 'triangular_prism':
+                    return isValidTriangularPrismPattern(placedSlots);
+                case 'pyramid':
+                    return isValidPyramidPattern(placedSlots);
+                default:
+                    return false;
+            }
+        }
+        
+        // 获取相邻槽位
+        function getAdjacentSlots(slotId) {
+            const row = Math.ceil(slotId / 5);
+            const col = ((slotId - 1) % 5) + 1;
+            const adjacent = [];
+            
+            // 上下左右四个方向
+            if (row > 1) adjacent.push(slotId - 5); // 上
+            if (row < 5) adjacent.push(slotId + 5); // 下
+            if (col > 1) adjacent.push(slotId - 1); // 左
+            if (col < 5) adjacent.push(slotId + 1); // 右
+            
+            return adjacent;
+        }
+        
+        // 检查连通性（使用BFS算法）
+        function checkConnectivity(placedSlots) {
+            if (placedSlots.length === 0) return false;
+            
+            const visited = new Set();
+            const queue = [placedSlots[0]];
+            visited.add(placedSlots[0]);
+            
+            while (queue.length > 0) {
+                const current = queue.shift();
+                const adjacent = getAdjacentSlots(current);
+                
+                for (const neighbor of adjacent) {
+                    if (placedSlots.includes(neighbor) && !visited.has(neighbor)) {
+                        visited.add(neighbor);
+                        queue.push(neighbor);
+                    }
+                }
+            }
+            
+            return visited.size === placedSlots.length;
+        }
+        
+        // 正方体有效性检查（6个正方形）
+        function isValidCubePattern(placedSlots) {
+            // 1. 数量检查
+            if (placedSlots.length !== 6) return false;
+
+            // 2. 连通性检查
+            if (!checkConnectivity(placedSlots)) return false;
+
+            // 3. 检查"田"字形规则
+            const positionSet = new Set();
+            const positions = placedSlots.map(slot => {
+                const row = Math.ceil(slot / 5);
+                const col = ((slot - 1) % 5) + 1;
+                positionSet.add(`${row},${col}`);
+                return { row, col };
+            });
+
+            for (const piece of positions) {
+                const { row, col } = piece;
+                // 检查右下角是否存在2x2区块
+                if (positionSet.has(`${row},${col+1}`) && 
+                    positionSet.has(`${row+1},${col}`) && 
+                    positionSet.has(`${row+1},${col+1}`)) {
+                    return false; // 发现"田"字形
+                }
+            }
+
+            // 4. 检查行规则（修改版，支持141形式）
+            const rows = {};
+            positions.forEach(piece => {
+                if (!rows[piece.row]) rows[piece.row] = 0;
+                rows[piece.row]++;
+            });
+
+            const rowCounts = Object.values(rows);
+            
+            // 允许141形式（中间一行4个正方形，上下各1个）
+            // 检查是否有行包含5个或更多正方形（不可能出现在有效展开图中）
+            if (Math.max(...rowCounts) >= 5) return false;
+            
+            // 检查是否有两行都包含3个正方形（这可能导致无法折叠）
+            if (rowCounts.filter(count => count === 3).length > 1) return false;
+
+            // 如果通过所有检查，极大概率是一个有效的展开图
+            return true;
+        }
+
+        // 长方体有效性检查（6个组件，正方形和长方形数量均为偶数）
+        function isValidCuboidPattern(placedSlots) {
+            // 1. 数量检查
+            if (placedSlots.length !== 6) return false;
+
+            // 2. 连通性检查
+            if (!checkConnectivity(placedSlots)) return false;
+
+            // 3. 检查正方形和长方形数量是否均为偶数
+            let squareCount = 0;
+            let rectangleCount = 0;
+            
+            for (const slot of placedSlots) {
+                const piece = splicingState.placedPieces[slot];
+                if (piece.type === 'square') {
+                    squareCount++;
+                } else if (piece.type === 'rectangle') {
+                    rectangleCount++;
+                }
+            }
+            
+            // 要求：正方形和长方形的数量都是偶数
+            if (squareCount % 2 !== 0 || rectangleCount % 2 !== 0) {
+                return false;
+            }
+
+            // 4. 检查"田"字形规则（与正方体相同）
+            const positionSet = new Set();
+            const positions = placedSlots.map(slot => {
+                const row = Math.ceil(slot / 5);
+                const col = ((slot - 1) % 5) + 1;
+                positionSet.add(`${row},${col}`);
+                return { row, col };
+            });
+
+            for (const piece of positions) {
+                const { row, col } = piece;
+                // 检查右下角是否存在2x2区块
+                if (positionSet.has(`${row},${col+1}`) && 
+                    positionSet.has(`${row+1},${col}`) && 
+                    positionSet.has(`${row+1},${col+1}`)) {
+                    return false; // 发现"田"字形
+                }
+            }
+
+            // 5. 检查行规则（与正方体相同）
+            const rows = {};
+            positions.forEach(piece => {
+                if (!rows[piece.row]) rows[piece.row] = 0;
+                rows[piece.row]++;
+            });
+
+            const rowCounts = Object.values(rows);
+            
+            // 检查是否有行包含5个或更多组件（不可能出现在有效展开图中）
+            if (Math.max(...rowCounts) >= 5) return false;
+            
+            // 检查是否有两行都包含3个组件（这可能导致无法折叠）
+            if (rowCounts.filter(count => count === 3).length > 1) return false;
+
+            // 如果通过所有检查，极大概率是一个有效的展开图
+            return true;
+        }
+
+        // 新增：两层牵手只有一检查函数
+        function checkTwoLayerHandsOnlyOne(placedSlots, centerSlot) {
+            // 第一层：中心线（包含中心点）
+            const firstLayer = new Set();
+            // 第二层：中心线的相邻位置
+            const secondLayer = new Set();
+            // 第三层：第二层的相邻位置，但不在第一层中
+            
+            // 获取所有相邻位置
+            const adjacentToCenter = new Set(getAdjacentSlots(centerSlot));
+            
+            // 第一层包含中心点和在中心线上的其他位置
+            firstLayer.add(centerSlot);
+            placedSlots.forEach(slot => {
+                if (adjacentToCenter.has(slot)) {
+                    firstLayer.add(slot);
+                }
+            });
+            
+            // 第二层是第一层的相邻位置，但不在第一层中
+            placedSlots.forEach(slot => {
+                if (!firstLayer.has(slot)) {
+                    const adjacents = getAdjacentSlots(slot);
+                    for (const adj of adjacents) {
+                        if (firstLayer.has(adj)) {
+                            secondLayer.add(slot);
+                            break;
+                        }
+                    }
+                }
+            });
+            
+            // 检查第二层的每个位置是否最多只有一个相邻的位置在第三层
+            for (const slot of secondLayer) {
+                const adjacents = getAdjacentSlots(slot);
+                let thirdLayerCount = 0;
+                
+                for (const adj of adjacents) {
+                    if (placedSlots.includes(adj) && !firstLayer.has(adj) && !secondLayer.has(adj)) {
+                        thirdLayerCount++;
+                        // 如果发现有两个或更多的第三层相邻位置，不符合规则
+                        if (thirdLayerCount > 1) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
+        // 三棱柱有效性检查（2个三角形 + 3个矩形）
+        function isValidTriangularPrismPattern(placedSlots) {
+            if (placedSlots.length !== 5) return false;
+            
+            // 检查连通性
+            if (!checkConnectivity(placedSlots)) return false;
+            
+            // 检查三角形的位置关系
+            const triangleSlots = [];
+            const rectangleSlots = [];
+            
+            placedSlots.forEach(slot => {
+                const piece = splicingState.placedPieces[slot];
+                if (piece.type === 'triangle') {
+                    triangleSlots.push(slot);
+                } else if (piece.type === 'rectangle') {
+                    rectangleSlots.push(slot);
+                }
+            });
+            
+            if (triangleSlots.length !== 2) return false;
+            
+            // 检查两个三角形是否相对（通常在三棱柱展开图的两端）
+            const trianglePositions = triangleSlots.map(slot => {
+                const row = Math.ceil(slot / 5);
+                const col = ((slot - 1) % 5) + 1;
+                return { row, col, slot };
+            });
+            
+            // 两个三角形应该有一定的距离，并且矩形在中间连接
+            const distance = Math.abs(trianglePositions[0].row - trianglePositions[1].row) + 
+                             Math.abs(trianglePositions[0].col - trianglePositions[1].col);
+            
+            return distance >= 2 && rectangleSlots.length === 3;
+        }
+        
+        // 四棱锥有效性检查（1个正方形 + 4个三角形）
+        function isValidPyramidPattern(placedSlots) {
+            // 1. 数量检查
+            if (placedSlots.length !== 5) return false;
+
+            // 2. 连通性检查
+            if (!checkConnectivity(placedSlots)) return false;
+
+            // 3. 检查正方形和三角形的数量
+            let squareCount = 0;
+            let triangleCount = 0;
+            let squareSlot = null;
+            
+            for (const slot of placedSlots) {
+                const piece = splicingState.placedPieces[slot];
+                if (piece.type === 'square') {
+                    squareCount++;
+                    squareSlot = slot;
+                } else if (piece.type === 'triangle') {
+                    triangleCount++;
+                }
+            }
+            
+            // 要求：必须有1个正方形和4个三角形
+            if (squareCount !== 1 || triangleCount !== 4) {
+                return false;
+            }
+
+            // 4. 验证正方形在中间，三角形在四周的布局
+            // 获取正方形的位置
+            const squareRow = Math.ceil(squareSlot / 5);
+            const squareCol = ((squareSlot - 1) % 5) + 1;
+            
+            // 检查所有三角形是否都与正方形相邻
+            for (const slot of placedSlots) {
+                const piece = splicingState.placedPieces[slot];
+                if (piece.type === 'triangle') {
+                    const triangleRow = Math.ceil(slot / 5);
+                    const triangleCol = ((slot - 1) % 5) + 1;
+                    
+                    // 计算三角形与正方形的曼哈顿距离
+                    const distance = Math.abs(triangleRow - squareRow) + Math.abs(triangleCol - squareCol);
+                    
+                    // 三角形必须与正方形直接相邻（距离为1）
+                    if (distance !== 1) {
+                        return false;
+                    }
+                }
+            }
+
+            // 如果通过所有检查，是一个有效的四棱锥展开图
+            return true;
+        }
+
+        
+        // 获取图形名称
+        function getShapeName(shapeType) {
+            const shapeNames = {
+                'cube': '正方体',
+                'cuboid': '长方体',
+                'triangular_prism': '三棱柱',
+                'cylinder': '四棱锥'
+            };
+            
+            return shapeNames[shapeType] || shapeType;
+        }
+        
+        // 清空拼接区域
+        function clearSplicingArea() {
+            const dropSlots = document.querySelectorAll('.drop-slot');
+            dropSlots.forEach(slot => {
+                slot.innerHTML = '';
+                slot.classList.remove('filled');
+            });
+            
+            // 重置放置状态
+            splicingState.placedPieces = {};
+            
+            // 隐藏反馈信息
+            const feedbackElement = document.getElementById('result-feedback');
+            feedbackElement.classList.add('hidden');
+        }
+        
+        // 显示示例
+        function showExample() {
+            // 先清空拼接区域
+            clearSplicingArea();
+            
+            // 根据当前图形类型显示示例
+            let examplePattern = [];
+            
+            switch (splicingState.currentShape) {
+                case 'cube':
+                    // 正方体示例模式（经典的十字型）
+                    examplePattern = [
+                        { slot: 3, type: 'square' },
+                        { slot: 8, type: 'square' },
+                        { slot: 9, type: 'square' },
+                        { slot: 12, type: 'square' },
+                        { slot: 13, type: 'square' },
+                        { slot: 18, type: 'square' }
+                    ];
+                    break;
+                case 'cuboid':
+                    // 长方体示例模式
+                    examplePattern = [
+                        { slot: 3, type: 'rectangle' },
+                        { slot: 8, type: 'rectangle' },
+                        { slot: 9, type: 'square' },
+                        { slot: 12, type: 'square' },
+                        { slot: 13, type: 'rectangle' },
+                        { slot: 18, type: 'rectangle' }
+                    ];
+                    break;
+                case 'triangular_prism':
+                    // 三棱柱示例模式
+                    examplePattern = [
+                        { slot: 8, type: 'triangle' },
+                        { slot: 9, type: 'rectangle' },
+                        { slot: 10, type: 'triangle' },
+                        { slot: 13, type: 'rectangle' },
+                        { slot: 7, type: 'rectangle' }
+                    ];
+                    break;
+                case 'cylinder':
+                    // 修改为四棱锥示例
+                    examplePattern = [
+                        { slot: 8, type: 'square' },    
+                        { slot: 3, type: 'triangle' },  
+                        { slot: 13, type: 'triangle' }, 
+                        { slot: 7, type: 'triangle' },  
+                        { slot: 9, type: 'triangle' }  
+                    ];
+                    break;
+            }
+            
+            // 放置示例组件
+            examplePattern.forEach(item => {
+                placeExamplePiece(item.slot, item.type);
+            });
+        }
+        
+        // 放置示例组件
+        function placeExamplePiece(slotId, pieceType) {
+            const slot = document.querySelector(`[data-slot="${slotId}"]`);
+            const originalPiece = document.querySelector(`[data-piece-type="${pieceType}"]`);
+            
+            if (slot && originalPiece) {
+                // 克隆组件
+                const pieceToPlace = originalPiece.cloneNode(true);
+                
+                // 设置组件样式使其与方格大小一致
+                pieceToPlace.style.width = '100%';
+                pieceToPlace.style.height = '100%';
+                pieceToPlace.style.margin = '0';
+                pieceToPlace.style.padding = '0';
+                pieceToPlace.classList.remove('mx-auto');
+                pieceToPlace.classList.add('flex', 'items-center', 'justify-center');
+                
+                // 确保组件可以再次被拖拽
+                pieceToPlace.setAttribute('draggable', 'true');
+                pieceToPlace.addEventListener('dragstart', handleDragStart);
+                pieceToPlace.addEventListener('dragend', handleDragEnd);
+                
+                // 调整组件内的SVG大小和位置
+                const svg = pieceToPlace.querySelector('svg');
+                if (svg) {
+                    svg.style.width = '100%';
+                    svg.style.height = '100%';
+                    svg.style.display = 'block';
+                    svg.style.margin = 'auto';
+                }
+                
+                // 隐藏标签文字
+                const label = pieceToPlace.querySelector('span');
+                if (label) {
+                    label.style.display = 'none';
+                }
+                
+                // 添加到槽位
+                slot.appendChild(pieceToPlace);
+                
+                // 更新槽位状态
+                slot.classList.add('filled');
+                
+                // 更新放置状态
+                splicingState.placedPieces[slotId] = {
+                    type: pieceType
+                };
+            }
+        }
+        
+        // 初始化应用
+        function initApp() {
+            initDragAndDrop();
+            initButtons();
+            updateInstructionsAndKnowledge();
+            initAnimation();
+        }
+        
+        // 初始化动画功能
+        function initAnimation() {
+            // 创建动画模态框
+            const modal = document.createElement('div');
+            modal.id = 'shape-animation-modal';
+            modal.className = 'animation-modal';
+            
+            modal.innerHTML = `
+                <div class="animation-container">
+                    <button class="animation-close" id="close-animation">×</button>
+                    <h3 class="text-xl font-bold mb-4" id="animation-title">立体图形展示</h3>
+                    <div class="shape-3d-container" id="3d-shape-container"></div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加关闭事件监听
+            const closeBtn = document.getElementById('close-animation');
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('show');
+            });
+            
+            // 点击模态框背景关闭
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        }
+        
+        // 显示立体图形动画
+        function showShapeAnimation(shapeType) {
+            const modal = document.getElementById('shape-animation-modal');
+            const title = document.getElementById('animation-title');
+            const container = document.getElementById('3d-shape-container');
+            
+            // 设置标题
+            title.textContent = getShapeName(shapeType) + ' 3D展示';
+            
+            // 根据图形类型创建3D模型
+            let shapeHtml = '';
+            
+            switch (shapeType) {
+                case 'cube':
+                    shapeHtml = `
+                        <div class="cube-3d">
+                            <div class="cube-face cube-front">1</div>
+                            <div class="cube-face cube-back">2</div>
+                            <div class="cube-face cube-right">3</div>
+                            <div class="cube-face cube-left">4</div>
+                            <div class="cube-face cube-top">5</div>
+                            <div class="cube-face cube-bottom">6</div>
+                        </div>
+                    `;
+                    break;
+                case 'cuboid':
+                    shapeHtml = `
+                        <div class="cuboid-3d">
+                            <div class="cuboid-face cuboid-front">1</div>
+                            <div class="cuboid-face cuboid-back">2</div>
+                            <div class="cuboid-face cuboid-right">3</div>
+                            <div class="cuboid-face cuboid-left">4</div>
+                            <div class="cuboid-face cuboid-top">5</div>
+                            <div class="cuboid-face cuboid-bottom">6</div>
+                        </div>
+                    `;
+                    break;
+                case 'triangular_prism':
+                    shapeHtml = `
+                        <div class="triangular-prism-3d">
+                            <div class="prism-triangle prism-front"></div>
+                            <div class="prism-triangle prism-back"></div>
+                            <div class="prism-rectangle prism-right"></div>
+                            <div class="prism-rectangle prism-left"></div>
+                            <div class="prism-rectangle prism-bottom"></div>
+                        </div>
+                    `;
+                    break;
+                case 'cylinder':
+                    shapeHtml = `
+                        <div class="pyramid-3d">
+                        <div class="pyramid-face pyramid-base"></div>
+                        <div class="pyramid-face pyramid-front"></div>
+                        <div class="pyramid-face pyramid-back"></div>
+                        <div class="pyramid-face pyramid-left"></div>
+                        <div class="pyramid-face pyramid-right"></div>
+                    </div>
+                    `;
+                    break;
+            }
+            
+            container.innerHTML = shapeHtml;
+            
+            // 显示模态框
+            modal.classList.add('show');
+        }
+        
+        // 页面加载完成后初始化应用 + 初始化ChatSDK
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            
+            try {
+                const chatSDK = new FloatingChatSDK({
+                    appId: "7551596535822958646",
+                    workflowId: "7560369410436513828",
+                    token: "sat_ZUvu7vrte22QySxTNgbO2PXp1xo5jJGOF8CaxtclU6NqxKBYZirfGVxdU6ir0Nik",
+                    primaryColor: "#4361ee", // 匹配页面主色（紫色系）
+                    chatWidth: 380,          // 固定聊天窗口宽度，不拉伸
+                    btnSize: 56,             // 固定悬浮球尺寸
+                    retryBtn: document.getElementById('chat-retry-btn'), // 绑定备用按钮
+                    iconUrl: "https://picsum.photos/60/60?chat=1" // 可替换为同文件夹图标（如"chat-icon.png"）
+                });
+
+                // SDK加载成功后隐藏备用按钮
+                if (chatSDK.hideRetryBtn) {
+                    chatSDK.hideRetryBtn();
+                }
+            } catch (error) {
+                console.error('ChatSDK加载失败:', error);
+                document.getElementById('chat-retry-btn').style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>

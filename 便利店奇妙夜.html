@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>便利店奇妙夜</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5A9E71', // 改为低饱和度绿色（主色调）
+                        secondary: '#4A6FA5', // 柔和的蓝色（辅助色）
+                        accent: '#5A9E71', // 低饱和度绿色（题目主色）
+                        dark: '#1C1C1E',
+                        light: '#F9F9F9'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['"ZCOOL QingKe HuangYou"', 'cursive']
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 10px 25px -5px rgba(90, 158, 113, 0.3);
+            }
+            .scene-transition {
+                transition: all 0.5s ease;
+            }
+            .puzzle-input:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(90, 158, 113, 0.3);
+            }
+            .puzzle-card {
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+            .puzzle-card:hover {
+                box-shadow: 0 12px 20px -10px rgba(90, 158, 113, 0.25);
+            }
+            .btn-hover {
+                transition: all 0.3s ease;
+            }
+            .btn-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(90, 158, 113, 0.2);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+</head>
+<body class="bg-light text-dark font-sans min-h-screen">
+    <!-- 导航栏 -->
+    <nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-shopping-bag text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-primary">便利店奇妙夜</h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#home" class="hover:text-primary transition-colors">首页</a>
+                <a href="#story" class="hover:text-primary transition-colors">故事</a>
+                <a href="#characters" class="hover:text-primary transition-colors">角色</a>
+                <a href="#play" class="px-4 py-1 bg-primary text-white rounded-full text-sm hover:bg-primary/90 transition-colors">开始体验</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-dark text-xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#home" class="py-2 hover:text-primary transition-colors">首页</a>
+                <a href="#story" class="py-2 hover:text-primary transition-colors">故事</a>
+                <a href="#characters" class="py-2 hover:text-primary transition-colors">角色</a>
+                <a href="#play" class="py-2 hover:text-primary transition-colors">开始体验</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-primary/5 rounded-l-full -z-10"></div>
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <div class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4 animate-pulse">
+                        数学应用 · 互动剧情
+                    </div>
+                    <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-shadow mb-6">
+                        便利店<br>
+                        <span class="text-primary">奇妙夜</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-lg">
+                        深夜的便利店，看似平静却暗藏玄机。作为夜班店员，你需要用数学智慧解决一系列突发状况，
+                        度过这个不平凡的夜晚。
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#play" class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all transform hover:-translate-y-1">
+                            开始工作 <i class="fa fa-clock-o ml-2"></i>
+                        </a>
+                        <a href="#story" class="inline-flex items-center px-6 py-3 bg-white text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all transform hover:-translate-y-1">
+                            了解详情 <i class="fa fa-info-circle ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 relative">
+                    <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                        <img src="https://picsum.photos/id/431/600/400" alt="深夜便利店内部场景，货架上摆满商品，收银台亮着灯" class="w-full h-auto">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                            <span class="text-white text-shadow font-medium">23:00 - 07:00 夜班时间...</span>
+                        </div>
+                    </div>
+                    <!-- 装饰性元素 -->
+                    <div class="absolute top-1/4 -left-4 text-4xl text-primary/20 rotate-12">¥</div>
+                    <div class="absolute bottom-1/3 -right-2 text-3xl text-primary/20 -rotate-12">%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 故事介绍 -->
+    <section id="story" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+<div class="text-center mb-16">
+                <div class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+                    故事背景
+                </div>
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4 text-primary">夜班奇遇</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">一个充满挑战的夜班，等待你来应对</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-gray-50 rounded-2xl p-8 shadow-sm">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-1 bg-primary rounded-full mr-3"></div>
+                    <h3 class="text-xl font-bold text-primary">夜班开始</h3>
+                </div>
+                
+                <p class="mb-6 leading-relaxed">
+                    这是你在"24小时便利站"做兼职的第三个月，今晚又是你独自负责夜班。晚上11点，
+                    店长交接完工作后匆匆离开，留下你一个人看管这家小店。
+                </p>
+<div class="bg-white p-4 rounded-xl border-l-4 border-primary mb-6 shadow-sm">
+                    <p class="italic text-gray-700">
+                        "今晚可能会有点不寻常，系统好像不太稳定。记住，遇到问题不要慌，
+                        仔细算算，总能解决的。库存清单和操作指南都在柜台抽屉里。"
+                    </p>
+                    <p class="text-right text-sm text-gray-500 mt-2">—— 李店长的留言</p>
+                </div>
+                
+                <p class="leading-relaxed">
+                    刚开始一切正常，时钟指向午夜12点，便利店的自动门突然发出"嘀嘀"的警报声。
+                    紧接着，收银机开始闪烁异常代码，冷藏柜的温度显示也出现了问题。
+                    看来店长说的"不寻常"真的要发生了...
+                </p>
+                
+                <div class="mt-8 flex justify-center">
+                    <a href="#play" class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all">
+                        开始夜班 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 角色介绍 -->
+    <section id="characters" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+                    角色介绍
+                </div>
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4 text-primary">夜班相关人员</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">这些人会在夜晚出现在便利店</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- 角色1：玩家 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://picsum.photos/id/64/400/300" alt="穿着便利店工作服的年轻店员站在货架前整理商品" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-primary">你</h3>
+                        <p class="text-gray-600 mb-3">17岁，高中生兼职</p>
+                        <p class="text-sm text-gray-500 mb-4">
+                            数学成绩中等，但做事细心有条理。这是你第一次独自值夜班，
+                            希望能顺利完成工作。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">夜班新手</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">认真负责</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 角色2：李店长 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://picsum.photos/id/177/400/300" alt="便利店店长正在检查商品库存清单" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-primary">李店长</h3>
+                        <p class="text-gray-600 mb-3">45岁，便利店店长</p>
+                        <p class="text-sm text-gray-500 mb-4">
+                            经验丰富，知道便利店的各种秘密。今晚临时有事，
+                            将店铺交给你独自看管。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">经验丰富</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">有点神秘</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 角色3：神秘顾客 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://picsum.photos/id/1005/400/300" alt="老年顾客在便利店挑选商品" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-primary">王老先生</h3>
+                        <p class="text-gray-600 mb-3">70岁，常客</p>
+                        <p class="text-sm text-gray-500 mb-4">
+                            每天凌晨2点准时来买牛奶和报纸的老people，
+                            对便利店的情况很熟悉，偶尔会提供帮助。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">热心助人</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs">数学爱好者</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- 游戏区域 -->
+    <section id="play" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+<div class="text-center mb-16">
+                <div class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+                    开始夜班
+                </div>
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4 text-primary">便利店挑战</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">解决遇到的问题，顺利完成夜班工作</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <!-- 游戏进度 -->
+                <div class="mb-10 bg-gray-50 p-4 rounded-xl shadow-sm">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">工作进度</span>
+                        <span class="text-primary font-bold" id="progress-text">0/4</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-primary h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between mt-1 text-xs text-gray-500">
+                        <span>收银台</span>
+                        <span>货架整理</span>
+                        <span>冷藏柜</span>
+                        <span>结束夜班</span>
+                    </div>
+                </div>
+
+                <!-- 游戏容器 -->
+                <div class="bg-gray-50 rounded-2xl shadow-md overflow-hidden">
+                    <!-- 游戏开始界面 -->
+                    <div id="game-start" class="p-8 text-center">
+                        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fa fa-shopping-cart text-4xl text-primary"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4 text-primary">准备开始夜班</h3>
+                        <p class="text-gray-600 mb-8 max-w-lg mx-auto">
+                            你将在便利店的三个区域遇到不同问题，每个问题都需要运用数学知识解决。
+                            完成所有工作，就能顺利结束这个奇妙的夜班。
+                        </p>
+                        <button id="start-shift" class="px-8 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all text-lg transform hover:-translate-y-1 btn-hover">
+                            开始工作
+                        </button>
+                    </div>
+
+                    <!-- 场景1：收银台 -->
+                    <div id="scene-1" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/id/488/800/400" alt="便利店收银台，显示收银机和商品" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景1：收银台</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6 transform transition-all duration-500 hover:shadow-md">
+                                <p class="mb-6 leading-relaxed">刚过午夜，收银机突然发出警报，屏幕显示"异常！"：</p>
+                                
+                                <div class="bg-primary/5 p-5 rounded-lg border-l-4 border-primary mb-6 puzzle-card">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                            <i class="fa fa-calculator text-primary"></i>
+                                        </div>
+                                        <h4 class="font-medium text-lg text-primary">问题1：</h4>
+                                    </div>
+                                    <p class="mb-4 text-gray-700">正在加载题目内容...</p>
+                                    
+                                    <div class="mt-5">
+                                        <input type="number" step="0.01" id="puzzle-1-answer" class="w-full p-3 border border-gray-300 rounded-lg mb-3 puzzle-input focus:border-primary transition-colors" placeholder="请输入有效的数字答案">
+                                        <button id="check-puzzle-1" class="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors btn-hover">
+                                            确认金额
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-1-feedback" class="hidden p-4 rounded-lg mb-4 transition-all duration-300"></div>
+                                
+                                <div id="scene-1-clue" class="hidden">
+                                    <div class="bg-primary/10 p-5 rounded-lg border-l-4 border-primary mb-6 transform transition-all duration-500 hover:shadow-md">
+                                        <h4 class="font-bold flex items-center mb-3">
+                                            <i class="fa fa-lightbulb-o text-primary mr-2"></i> 完成收银
+                                        </h4>
+                                        <p class="mb-3">找零正确！顾客离开时提醒你："货架区好像有些商品放错了位置，可能需要整理一下。"</p>
+                                        
+                                        <div class="mt-4 flex items-center text-sm">
+                                            <i class="fa fa-check-circle text-primary mr-2"></i>
+                                            <span class="text-primary font-medium">已完成：收银工作</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors btn-hover" data-next="2">
+                                            前往货架区 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 场景2：货架区 -->
+                    <div id="scene-2" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/id/292/800/400" alt="便利店货架，摆满各种零食和日用品" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景2：货架区</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6 transform transition-all duration-500 hover:shadow-md">
+                                <p class="mb-6 leading-relaxed">按照顾客的提示，你来到零食货架区，发现果然有不少商品放错了位置：</p>
+                                
+                                <div class="bg-primary/5 p-5 rounded-lg border-l-4 border-primary mb-6 puzzle-card">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                            <i class="fa fa-barcode text-primary"></i>
+                                        </div>
+                                        <h4 class="font-medium text-lg text-primary">问题2：</h4>
+                                    </div>
+                                    <p class="mb-4 text-gray-700">正在加载题目内容...</p>
+                                    
+                                    <div class="mt-5">
+                                        <input type="number" id="puzzle-2-answer" class="w-full p-3 border border-gray-300 rounded-lg mb-3 puzzle-input focus:border-primary transition-colors" placeholder="请输入有效的数字答案">
+                                        <button id="check-puzzle-2" class="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors btn-hover">
+                                            确认数量
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-2-feedback" class="hidden p-4 rounded-lg mb-4 transition-all duration-300"></div>
+                                
+                                <div id="scene-2-clue" class="hidden">
+                                    <div class="bg-primary/10 p-5 rounded-lg border-l-4 border-primary mb-6 transform transition-all duration-500 hover:shadow-md">
+                                        <h4 class="font-bold flex items-center mb-3">
+                                            <i class="fa fa-lightbulb-o text-primary mr-2"></i> 货架整理完成
+                                        </h4>
+                                        <p class="mb-3">库存补充正确！冷藏柜的警报声突然响起，显示温度异常，可能影响冰淇淋的保存。</p>
+                                        
+                                        <div class="mt-4 flex items-center text-sm">
+                                            <i class="fa fa-check-circle text-primary mr-2"></i>
+                                            <span class="text-primary font-medium">已完成：货架整理</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors btn-hover" data-next="3">
+                                            前往冷藏柜 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 场景3：冷藏柜 -->
+                    <div id="scene-3" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/id/292/800/400" alt="便利店冷藏柜，里面摆放着饮料和冰淇淋" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景3：冷藏柜</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6 transform transition-all duration-500 hover:shadow-md">
+                                <p class="mb-6 leading-relaxed">你来到冷藏柜前，发现温度已经升至8°C，冰淇淋开始融化：</p>
+                                
+                                <div class="bg-primary/5 p-5 rounded-lg border-l-4 border-primary mb-6 puzzle-card">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                            <i class="fa fa-thermometer-half text-primary"></i>
+                                        </div>
+                                        <h4 class="font-medium text-lg text-primary">问题3：</h4>
+                                    </div>
+                                    <p class="mb-4 text-gray-700">正在加载题目内容...</p>
+                                    
+                                    <div class="mt-5">
+                                        <input type="number" id="puzzle-3-answer" class="w-full p-3 border border-gray-300 rounded-lg mb-3 puzzle-input focus:border-primary transition-colors" placeholder="请输入有效的数字答案">
+                                        <button id="check-puzzle-3" class="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors btn-hover">
+                                            计算结果
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-3-feedback" class="hidden p-4 rounded-lg mb-4 transition-all duration-300"></div>
+                                
+                                <div id="scene-3-clue" class="hidden">
+                                    <div class="bg-primary/10 p-5 rounded-lg border-l-4 border-primary mb-6 transform transition-all duration-500 hover:shadow-md">
+                                        <h4 class="font-bold flex items-center mb-3">
+                                            <i class="fa fa-lightbulb-o text-primary mr-2"></i> 冷藏问题解决
+                                        </h4>
+                                        <p class="mb-3">计算正确！你决定暂时将冰淇淋转移到备用冰柜。</p>
+                                        
+                                        <div class="mt-4 flex items-center text-sm">
+                                            <i class="fa fa-check-circle text-primary mr-2"></i>
+                                            <span class="text-primary font-medium">已完成：冷藏管理</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors btn-hover" data-next="4">
+                                            结束夜班 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 场景4：储物柜 -->
+                    <div id="scene-4" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/id/188/800/400" alt="便利店的储物柜区域" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景4：储物柜</h3>
+                                    <p>密码破解</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6 transform transition-all duration-500 hover:shadow-md">
+                                <p class="mb-6 leading-relaxed">王老先生记得储物柜密码是一个四位数，遵循特定规律。系统记录了密码的前三位数字和规律提示：</p>
+                                
+                                <div class="bg-primary/5 p-5 rounded-lg border-l-4 border-primary mb-6 puzzle-card">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                            <i class="fa fa-lock text-primary"></i>
+                                        </div>
+                                        <h4 class="font-medium text-lg text-primary">问题4：</h4>
+                                    </div>
+                                    <p class="mb-4 text-gray-700">正在加载题目内容...</p>
+                                    
+                                    <div class="mt-5">
+                                        <input type="number" id="puzzle-4-answer" class="w-full p-3 border border-gray-300 rounded-lg mb-3 puzzle-input focus:border-primary transition-colors" placeholder="请输入有效的数字答案">
+                                        <button id="check-puzzle-4" class="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors btn-hover">
+                                            确认密码
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-4-feedback" class="hidden p-4 rounded-lg mb-4 transition-all duration-300"></div>
+                                
+                                <div id="scene-4-clue" class="hidden">
+                                    <div class="bg-primary/10 p-5 rounded-lg border-l-4 border-primary mb-6 transform transition-all duration-500 hover:shadow-md">
+                                        <h4 class="font-bold flex items-center mb-3">
+                                            <i class="fa fa-lightbulb-o text-primary mr-2"></i> 密码正确
+                                        </h4>
+                                        <p class="mb-3">王老先生成功取出了物品，他感谢你并告诉你："每年的3月15日系统都会这样，是例行维护测试，考验新员工的应变能力。"</p>
+                                        
+                                        <div class="mt-4 flex items-center text-sm">
+                                            <i class="fa fa-check-circle text-primary mr-2"></i>
+                                            <span class="text-primary font-medium">已完成：所有工作</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors btn-hover" data-next="5">
+                                            结束夜班 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 结局场景 -->
+                    <div id="victory" class="hidden p-8 text-center">
+                        <div class="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fa fa-check-circle text-5xl text-primary"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4 text-primary">夜班结束！</h3>
+                        <p class="text-gray-600 mb-8 max-w-lg mx-auto">
+                            清晨7点，李店长准时来到店里，对你的表现非常满意。
+                        </p>
+                        
+                        <div class="bg-gray-100 p-6 rounded-xl max-w-2xl mx-auto mb-8 text-left transform transition-all duration-500 hover:shadow-md">
+                            <h4 class="font-bold mb-4 text-center text-primary">夜班总结</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                   <i class="fa fa-spinner fa-spin text-primary mt-1 mr-2"></i>
+                                    <span>正在加载题目解析...</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-primary/10 p-6 rounded-xl max-w-md mx-auto mb-8 transform transition-all duration-500 hover:shadow-md">
+                            <h4 class="font-bold mb-3 text-primary">李店长的评价</h4>
+                            <p class="text-gray-700 italic">
+                                "做得很好！其实这是我们对新员工的特殊测试，考察的不仅是数学能力，
+                                而是应对突发情况的冷静和解决问题的能力。这个月给你发奖金！"
+                            </p>
+                        </div>
+                        
+                        <button id="play-again" class="px-8 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all text-lg btn-hover">
+                            再次体验 <i class="fa fa-refresh ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 初始化时隐藏默认题目，显示加载状态
+            initializeQuestionLoading();
+            
+            // 修复：调用正确的函数名
+            fetchQuestionsFromAPI();
+        });
+        
+        // 初始化题目加载状态
+        function initializeQuestionLoading() {
+            // 隐藏默认题目内容
+            const questionElements = document.querySelectorAll('.puzzle-card p:nth-of-type(2)');
+            const analysisElements = document.querySelectorAll('.puzzle-card p:nth-of-type(3)');
+            
+            // 清空内容并设置加载状态
+            [...questionElements, ...analysisElements].forEach(element => {
+                element.textContent = '';
+                element.style.color = '#999';
+            });
+            
+            // 为每个问题区域设置加载提示
+            questionElements.forEach((element, index) => {
+                element.textContent = `正在加载题目 ${index + 1}...`;
+            });
+        }
+        
+        // 从API获取题目数据 - 优化SSE解析，支持标准格式
+        async function fetchQuestionsFromAPI() {
+            try {
+                const workflow_id = "7560510557531979776";
+                const app_id = "7560355709536796699";
+                const pat = "sat_ZUvu7vrte22QySxTNgbO2PXp1xo5jJGOF8CaxtclU6NqxKBYZirfGVxdU6ir0Nik";
+                const apiUrl = "https://api.coze.cn/v1/workflow/stream_run";
+                const inputKnowledge = localStorage.getItem('mathKnowledge') || '有理数'; 
+
+                console.log('开始调用API获取题目数据...');
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${pat}`
+                    },
+                    body: JSON.stringify({
+                        workflow_id: workflow_id,
+                        app_id: app_id,
+                        parameters: {
+                            input: inputKnowledge
+                        }
+                    })
+                });
+                
+                console.log('API响应状态:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API错误响应:', errorText);
+                    throw new Error(`API请求失败: HTTP ${response.status}. 响应: ${errorText.substring(0, 200)}`);
+                }
+                
+                // 获取响应文本
+                const responseText = await response.text();
+                console.log('API返回的原始内容:', responseText);
+                
+                // 解析SSE格式的数据
+                let questionData;
+                try {
+                    // 提取所有data字段中的JSON数据
+                    const dataMatches = responseText.match(/data:\s*({.*?})(?=\s*(?:id:|event:|$))/gs);
+                    
+                    if (dataMatches && dataMatches.length > 0) {
+                        let outputArray = null;
+                        
+                        // 遍历所有data字段，寻找包含题目数据的数组
+                        for (const match of dataMatches) {
+                            const jsonStr = match.replace(/data:\s*/, '');
+                            try {
+                                const parsed = JSON.parse(jsonStr);
+                                console.log('解析到的SSE数据块:', parsed);
+                                
+                                // 检查content字段
+                                if (parsed.content) {
+                                    try {
+                                        const contentData = JSON.parse(parsed.content);
+                                        if (contentData.output && Array.isArray(contentData.output) && contentData.output.length >= 6) {
+                                            outputArray = contentData.output;
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        console.log('content解析失败:', e);
+                                    }
+                                }
+                                
+                                // 检查是否有直接的output数组
+                                if (parsed.output && Array.isArray(parsed.output) && parsed.output.length >= 6) {
+                                    outputArray = parsed.output;
+                                    break;
+                                }
+                            } catch (e) {
+                                console.log('单个数据块解析失败:', e);
+                            }
+                        }
+                        
+                        if (outputArray && Array.isArray(outputArray) && outputArray.length >= 6) {
+                            questionData = outputArray;
+                            console.log('成功提取到题目数据:', questionData);
+                        } else {
+                            throw new Error('未找到有效的题目数据数组');
+                        }
+                    } else {
+                        throw new Error('未找到任何data字段');
+                    }
+                } catch (parseError) {
+                    console.error('SSE解析失败:', parseError);
+                    
+                    // // 使用标准格式的模拟数据作为备选
+                    // console.warn('使用标准格式的模拟数据');
+                    // questionData = [
+                    //     "谜题1：一个三位数，百位数字是个位数字的2倍，十位数字等于百位数字与个位数字的和，这个三位数是多少？",
+                    //     "解析：设个位数字为x，则百位数字为2x，十位数字为2x+x=3x。因为x必须是1-9的整数，当x=1时，数字为231，验证：2+1=3，符合十位数字要求。",
+                    //     "谜题2：便利店早上8点进货120瓶饮料，上午卖出总数的1/3，下午卖出剩余数量的1/2，晚上又卖出最后剩余数量的1/4，最后还剩多少瓶？",
+                    //     "解析：上午卖出：120×1/3=40瓶，剩余80瓶；下午卖出：80×1/2=40瓶，剩余40瓶；晚上卖出：40×1/4=10瓶，最后剩余30瓶。",
+                    //     "谜题3：冰柜温度是-5℃，每小时上升3℃，经过4小时后温度是多少？",
+                    //     "解析：初始温度-5℃，4小时上升：4×3=12℃，最终温度：-5+12=7℃。"
+                    // ];
+                }
+                
+                // 验证数据格式
+                if (!Array.isArray(questionData)) {
+                    throw new Error('API返回的数据格式不符合预期，不是数组');
+                }
+                
+                if (questionData.length < 6) {
+                    throw new Error(`API返回的数据不完整，需要至少6个元素，但实际收到${questionData.length}个元素`);
+                }
+                
+                // 更新页面显示
+                updateQuestions(questionData);
+                console.log('题目数据加载成功，数据格式：[题目1, 解析1, 题目2, 解析2, 题目3, 解析3]');
+                
+            } catch (error) {
+                console.error('加载题目数据失败:', error);
+                
+                let errorMessage = '题目加载失败';
+                if (error.message.includes('ERR_NAME_NOT_RESOLVED')) {
+                    errorMessage = '无法连接到API服务器，请检查URL是否正确';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = '网络连接失败，请检查您的网络设置';
+                } else {
+                    errorMessage += ': ' + error.message;
+                }
+                
+                displayError(errorMessage);
+                provideRetryOption();
+            }
+        }
+        
+        // 更新页面上的题目内容
+        function updateQuestions(questionData) {
+            console.log('updateQuestions被调用，数据长度:', questionData.length);
+            console.log('题目数据内容:', questionData);
+            
+            // 场景1 - 收银台
+            console.log('更新场景1，题目内容:', questionData[0], '解析内容:', questionData[1]);
+            updateQuestionElement('#scene-1', questionData[0], questionData[1]);
+            
+            // 场景2 - 货架整理
+            console.log('更新场景2，题目内容:', questionData[2], '解析内容:', questionData[3]);
+            updateQuestionElement('#scene-2', questionData[2], questionData[3]);
+            
+            // 场景3 - 冷藏柜
+            console.log('更新场景3，题目内容:', questionData[4], '解析内容:', questionData[5]);
+            updateQuestionElement('#scene-3', questionData[4], questionData[5]);
+
+            // 更新夜班总结的解析内容
+            updateNightShiftSummary(questionData);
+        }
+        
+        // 更新单个问题区域的内容
+        function updateQuestionElement(sceneSelector, questionContent, analysisContent) {
+            console.log(`更新${sceneSelector}：题目内容="${questionContent}"`);
+            
+            // 查找现有的p元素（显示"正在加载题目内容..."的那个）
+            const existingPElement = document.querySelector(`${sceneSelector} .puzzle-card p`);
+            
+            if (existingPElement) {
+                console.log(`找到现有p元素，更新题目内容: "${questionContent}"`);
+                // 更新现有p元素的内容
+                existingPElement.textContent = questionContent;
+                existingPElement.style.color = '#333';
+                
+                // 添加调试样式
+                existingPElement.style.backgroundColor = '#ffffcc';
+                setTimeout(() => {
+                    existingPElement.style.backgroundColor = '';
+                }, 1000);
+                
+                console.log(`成功更新题目内容`);
+            } else {
+                console.error(`未找到现有p元素在: ${sceneSelector} .puzzle-card p`);
+                // 尝试查找所有p元素
+                const allPElements = document.querySelectorAll(`${sceneSelector} .puzzle-card p`);
+                console.log(`${sceneSelector} .puzzle-card 中找到 ${allPElements.length} 个p元素`);
+                allPElements.forEach((p, index) => {
+                    console.log(`p元素${index + 1}: "${p.textContent.substring(0, 50)}..."`);
+                });
+            }
+        }
+        
+        // 更新夜班总结的解析内容
+        function updateNightShiftSummary(questionData) {
+            const summaryList = document.querySelector('#victory .bg-gray-100 ul');
+            if (summaryList && questionData.length >= 6) {
+                // 清空现有内容
+                summaryList.innerHTML = '';
+                
+                // 添加题目解析内容
+                const analyses = [
+                    { title: '收银台问题解析', content: questionData[1] },
+                    { title: '货架整理问题解析', content: questionData[3] },
+                    { title: '冷藏柜问题解析', content: questionData[5] }
+                ];
+                
+                analyses.forEach(analysis => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start';
+                    li.innerHTML = `
+                        <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                        <span><strong>${analysis.title}：</strong>${analysis.content}</span>
+                    `;
+                    summaryList.appendChild(li);
+                });
+                
+                // 添加储物柜密码解析（如果有第4个解析）
+                if (questionData.length >= 8 && questionData[7]) {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start';
+                    li.innerHTML = `
+                        <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                        <span><strong>密码规律问题解析：</strong>${questionData[7]}</span>
+                    `;
+                    summaryList.appendChild(li);
+                }
+            }
+        }
+        
+        // 显示错误信息
+        function displayError(message) {
+        const questionElements = document.querySelectorAll('.puzzle-card p:nth-of-type(2)');
+        
+        // 为第一个问题显示错误信息，其他问题保持加载状态
+        if (questionElements.length > 0) {
+        questionElements[0].textContent = message;
+        questionElements[0].style.color = '#ff0000';
+        }
+        
+        // 添加错误通知
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-20 right-20 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // 3秒后自动移除通知
+        setTimeout(() => {
+        notification.remove();
+        }, 3000);
+        }
+        
+        // 提供重试选项
+        function provideRetryOption() {
+        // 检查是否已存在重试按钮
+        if (document.querySelector('#retry-button')) {
+        return;
+        }
+        
+        const retryButton = document.createElement('button');
+        retryButton.id = 'retry-button';
+        retryButton.className = 'fixed bottom-10 right-10 bg-primary text-white px-6 py-3 rounded-lg shadow-lg z-50 hover:bg-primary/90 transition-colors';
+        retryButton.textContent = '重试加载题目';
+        
+        retryButton.addEventListener('click', function() {
+        // 重置状态
+        initializeQuestionLoading();
+        
+        // 修复：调用正确的函数名
+        fetchQuestionsFromAPI();
+        });
+        
+        document.body.appendChild(retryButton);
+        }
+    
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 游戏逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 正确答案
+            const correctAnswers = {
+                1: 1260,    // 收银找零
+                2: 120,     // 库存统计
+                3: -9,     // 融化计算
+            };
+            
+            // 获取元素
+            const startBtn = document.getElementById('start-shift');
+            const gameStart = document.getElementById('game-start');
+            const scenes = {
+                1: document.getElementById('scene-1'),
+                2: document.getElementById('scene-2'),
+                3: document.getElementById('scene-3'),
+                4: document.getElementById('scene-4'),
+                victory: document.getElementById('victory')
+            };
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const playAgainBtn = document.getElementById('play-again');
+
+            // 开始游戏
+            startBtn.addEventListener('click', function() {
+                gameStart.classList.add('hidden');
+                scenes[1].classList.remove('hidden');
+                // 添加淡入动画
+                scenes[1].classList.add('animate-fadeIn');
+                updateProgress(1);
+            });
+
+            // 验证谜题1答案
+            document.getElementById('check-puzzle-1').addEventListener('click', function() {
+                const answer = parseFloat(document.getElementById('puzzle-1-answer').value);
+                const feedback = document.getElementById('puzzle-1-feedback');
+                
+                // 添加按钮点击效果
+                this.classList.add('scale-95');
+                setTimeout(() => this.classList.remove('scale-95'), 150);
+                
+                // 考虑到可能的输入误差，接受一定范围内的答案
+                if (Math.abs(answer - correctAnswers[1]) < 0.01) {
+                    feedback.textContent = '恭喜！计算正确！';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-50 text-green-700 border border-green-100';
+                    // 显示正确动画
+                    feedback.classList.add('animate-pulse');
+                    setTimeout(() => feedback.classList.remove('animate-pulse'), 1000);
+                    document.getElementById('scene-1-clue').classList.remove('hidden');
+                    // 为线索区域添加淡入效果
+                    document.getElementById('scene-1-clue').classList.add('animate-fadeIn');
+                } else {
+                    feedback.textContent = '计算有误，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-50 text-red-700 border border-red-100';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+
+            // 验证谜题2答案
+            document.getElementById('check-puzzle-2').addEventListener('click', function() {
+                const answer = parseInt(document.getElementById('puzzle-2-answer').value);
+                const feedback = document.getElementById('puzzle-2-feedback');
+                
+                // 添加按钮点击效果
+                this.classList.add('scale-95');
+                setTimeout(() => this.classList.remove('scale-95'), 150);
+                
+                if (answer === correctAnswers[2]) {
+                    feedback.textContent = '恭喜！数量正确！';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-50 text-green-700 border border-green-100';
+                    feedback.classList.add('animate-pulse');
+                    setTimeout(() => feedback.classList.remove('animate-pulse'), 1000);
+                    document.getElementById('scene-2-clue').classList.remove('hidden');
+                    document.getElementById('scene-2-clue').classList.add('animate-fadeIn');
+                } else {
+                    feedback.textContent = '计算有误，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-50 text-red-700 border border-red-100';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+
+            // 验证谜题3答案
+            document.getElementById('check-puzzle-3').addEventListener('click', function() {
+                const answer = parseInt(document.getElementById('puzzle-3-answer').value);
+                const feedback = document.getElementById('puzzle-3-feedback');
+                
+                // 添加按钮点击效果
+                this.classList.add('scale-95');
+                setTimeout(() => this.classList.remove('scale-95'), 150);
+                
+                if (answer === correctAnswers[3]) {
+                    feedback.textContent = '恭喜！计算正确！';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-50 text-green-700 border border-green-100';
+                    feedback.classList.add('animate-pulse');
+                    setTimeout(() => feedback.classList.remove('animate-pulse'), 1000);
+                    document.getElementById('scene-3-clue').classList.remove('hidden');
+                    document.getElementById('scene-3-clue').classList.add('animate-fadeIn');
+                } else {
+                    feedback.textContent = '计算有误，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-50 text-red-700 border border-red-100';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+
+            // 验证谜题4答案
+            document.getElementById('check-puzzle-4').addEventListener('click', function() {
+                const answer = parseInt(document.getElementById('puzzle-4-answer').value);
+                const feedback = document.getElementById('puzzle-4-feedback');
+                
+                // 添加按钮点击效果
+                this.classList.add('scale-95');
+                setTimeout(() => this.classList.remove('scale-95'), 150);
+                
+                if (answer === correctAnswers[4]) {
+                    feedback.textContent = '恭喜！密码正确！规律是后一个数=前一个数×2，所以8×2=16。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-50 text-green-700 border border-green-100';
+                    feedback.classList.add('animate-pulse');
+                    setTimeout(() => feedback.classList.remove('animate-pulse'), 1000);
+                    document.getElementById('scene-4-clue').classList.remove('hidden');
+                    document.getElementById('scene-4-clue').classList.add('animate-fadeIn');
+                } else {
+                    feedback.textContent = '密码错误，请再试一次。提示：每个数都是前一个数的2倍。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-50 text-red-700 border border-red-100';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+
+            // 下一场景按钮
+            document.querySelectorAll('.next-scene-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const currentScene = parseInt(this.closest('[id^="scene-"]').id.split('-')[1]);
+                    const nextScene = parseInt(this.getAttribute('data-next'));
+                    
+                    // 添加过渡动画
+                    scenes[currentScene].classList.add('opacity-0');
+                    setTimeout(() => {
+                        scenes[currentScene].classList.add('hidden');
+                        scenes[currentScene].classList.remove('opacity-0');
+                        
+                        // 如果是最后一个场景，显示胜利界面
+                        if (nextScene > Object.keys(scenes).length - 2) {
+                            scenes.victory.classList.remove('hidden');
+                            scenes.victory.classList.add('animate-fadeIn');
+                            updateProgress(4);
+                        } else {
+                            scenes[nextScene].classList.remove('hidden');
+                            scenes[nextScene].classList.add('animate-fadeIn');
+                            updateProgress(nextScene);
+                        }
+                    }, 300);
+                });
+            });
+            
+            // 重新开始
+            playAgainBtn.addEventListener('click', function() {
+                // 添加过渡动画
+                scenes.victory.classList.add('opacity-0');
+                setTimeout(() => {
+                    scenes.victory.classList.add('hidden');
+                    scenes.victory.classList.remove('opacity-0', 'animate-fadeIn');
+                    gameStart.classList.remove('hidden');
+                    resetPuzzles();
+                    updateProgress(0);
+                }, 300);
+            });
+            
+            // 更新进度
+            function updateProgress(level) {
+                const percentage = (level / 4) * 100;
+                // 使用动画效果更新进度条
+                setTimeout(() => {
+                    progressBar.style.width = `${percentage}%`;
+                }, 100);
+                progressText.textContent = `${level}/4`;
+            }
+            
+            // 重置谜题状态
+            function resetPuzzles() {
+                // 重置所有谜题输入和反馈
+                document.querySelectorAll('[id^="puzzle-"][id$="-answer"]').forEach(input => {
+                    input.value = '';
+                });
+                
+                document.querySelectorAll('[id^="puzzle-"][id$="-feedback"]').forEach(feedback => {
+                    feedback.classList.add('hidden');
+                    feedback.classList.remove('animate-pulse');
+                });
+                
+                document.querySelectorAll('[id^="scene-"][id$="-clue"]').forEach(clue => {
+                    clue.classList.add('hidden');
+                    clue.classList.remove('animate-fadeIn');
+                });
+                
+                // 隐藏所有场景
+                Object.values(scenes).forEach(scene => {
+                    scene.classList.add('hidden');
+                    scene.classList.remove('animate-fadeIn', 'opacity-0');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

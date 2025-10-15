@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实验日志 #XM-24</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            glow: '#38BDF8',
+            dark: '#0F172A',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'glow-border': 'glowBorder 2s ease-in-out infinite alternate',
+            'pulse-glow': 'pulseGlow 1.5s infinite',
+            'float-glow': 'floatGlow 3s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            glowBorder: {
+              '0%': { boxShadow: '0 0 10px rgba(56, 189, 248, 0.5)' },
+              '100%': { boxShadow: '0 0 20px rgba(56, 189, 248, 0.8)' },
+            },
+            pulseGlow: {
+              '0%': { boxShadow: '0 0 0 0 rgba(56, 189, 248, 0.5)' },
+              '50%': { boxShadow: '0 0 10px 3px rgba(56, 189, 248, 0.8)' },
+              '100%': { boxShadow: '0 0 0 0 rgba(56, 189, 248, 0.5)' },
+            },
+            floatGlow: {
+              '0%': { 
+                opacity: '0.6', 
+                transform: 'translateY(3px)',
+                textShadow: '0 0 10px rgba(56, 189, 248, 0.6)' 
+              },
+              '100%': { 
+                opacity: '1', 
+                transform: 'translateY(-8px)',
+                textShadow: '0 0 25px rgba(56, 189, 248, 0.9)' 
+              },
+            }
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .bg-grid {
+        background-image: linear-gradient(rgba(56, 189, 248, 0.1) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(56, 189, 248, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      .tech-frame {
+        position: relative;
+        border: 2px solid rgba(56, 189, 248, 0.5);
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.5),
+                    inset 0 0 10px rgba(56, 189, 248, 0.2);
+        overflow: hidden;
+      }
+      .tech-frame::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(56, 189, 248, 0) 0%, rgba(56, 189, 248, 0.8) 50%, rgba(56, 189, 248, 0) 100%);
+        animation: scanTop 4s linear infinite;
+      }
+      .tech-frame::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(56, 189, 248, 0) 0%, rgba(56, 189, 248, 0.8) 50%, rgba(56, 189, 248, 0) 100%);
+        animation: scanBottom 4s linear infinite;
+        animation-delay: 2s;
+      }
+      @keyframes scanTop {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      @keyframes scanBottom {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      .text-glow {
+        text-shadow: 0 0 5px rgba(56, 189, 248, 0.7);
+      }
+      .loading-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: rgba(56, 189, 248, 0.8);
+        margin: 0 2px;
+        animation: loadingPulse 1s infinite alternate;
+      }
+      @keyframes loadingPulse {
+        0% { transform: scale(0.8); opacity: 0.5; }
+        100% { transform: scale(1.2); opacity: 1; }
+      }
+      .animate-shake {
+        animation: shake 0.5s ease-in-out;
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    .fade-out {
+      animation: fadeOut 1s ease-in-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-dark text-gray-200 min-h-screen bg-grid overflow-x-hidden">
+  <header class="flex justify-between items-center p-4">
+    <button id="back-btn" class="text-gray-300 hover:text-glow transition-colors flex items-center gap-2 text-lg">
+      <i class="fa fa-arrow-left"></i>
+      <span>返回</span>
+    </button>
+    <h1 class="text-2xl font-bold text-white text-glow">实验日志 #XM-24</h1>
+  </header>
+
+  <div id="lock-alert-modal" class="fixed inset-0 flex items-center justify-center z-50">
+    <div class="tech-frame max-w-xl w-full p-8 animate-fade-in">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-white flex items-center text-glow">
+          <i class="fa fa-shield text-glow mr-3"></i>
+          实验日志封锁警报
+        </h2>
+        <button id="close-modal" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fa fa-times text-xl"></i>
+        </button>
+      </div>
+      <p class="text-white leading-relaxed text-glow text-lg">
+        你置身于「星尘七号」未来科技实验室核心密室，冰冷的金属壁泛着幽蓝量子辉光，控制台纹路间流转着数据流。旁边摊开的实验手记边缘卷曲，Dr. Zero 潦草字迹记载着「能量核心启动密钥」—— 需用实验室散落的有理数线索算出答案，否则逐渐增强的磁力场将把一切碾为粉末。<br><br>
+        实验日志核心模块被系统**量子锁**自动封锁。根据《星尘实验室安全协议第7条》，仅能通过研究员遗留的数学密令解密。<br><br>
+        这些加密数据是解析“星尘计划异常”的关键，破解后将获得逃离密室的核心线索。
+      </p>
+      <button id="unlock-puzzle" class="w-full bg-glow hover:bg-blue-400 text-dark font-medium py-3 px-6 rounded transition-colors mt-6 text-lg animate-glow-border">
+        解锁数学密令
+      </button>
+    </div>
+  </div>
+
+  <div id="decoding-text" class="fixed inset-0 flex items-center justify-center z-40">
+    <p class="text-white text-2xl font-mono text-glow animate-float-glow">
+      实验室主屏幕闪过幽蓝辉光，实验日志的量子加密流正被缓缓解码...
+    </p>
+  </div>
+
+  <main id="puzzle-content" class="hidden container mx-auto px-4 py-8">
+    <div class="tech-frame mx-auto w-3/4 p-8 mb-8 animate-fade-in">
+      <h2 class="text-2xl font-bold text-white mb-6 flex items-center text-glow">
+        <i class="fa fa-key text-glow mr-3"></i>
+        【星尘计划·加密日志】
+      </h2>
+      <div id="api-content" class="text-white leading-relaxed text-lg">
+        <div id="loading-state" class="text-center py-8">
+          <p class="mb-4">正在从量子加密流加载实验日志...</p>
+          <div class="flex justify-center">
+            <span class="loading-dot"></span>
+            <span class="loading-dot" style="animation-delay: 0.2s"></span>
+            <span class="loading-dot" style="animation-delay: 0.4s"></span>
+          </div>
+        </div>
+        <div id="success-state" class="hidden"></div>
+        <div id="error-state" class="hidden text-red-400"></div>
+      </div>
+    </div>
+
+    <div class="tech-frame mx-auto w-3/4 p-6 animate-fade-in" style="animation-delay: 0.5s">
+      <div class="mb-6">
+        <label for="answer-input" class="block text-white mb-3 text-lg">请输入「能量核心启动密钥」的数值</label>
+        <input 
+          type="text" 
+          id="answer-input" 
+          class="w-full bg-dark border border-glow/50 rounded py-3 px-4 text-white text-lg focus:outline-none focus:animate-pulse-glow"
+          placeholder="输入密钥数值"
+        >
+      </div>
+      <button id="submit-answer" class="w-full bg-primary hover:bg-primary/80 text-white font-medium py-3 px-6 rounded transition-colors text-lg flex items-center justify-center gap-2">
+        <i class="fa fa-transmit text-xl"></i>
+        提交密钥，解锁日志
+      </button>
+    </div>
+  </main>
+
+  <!-- 【新增1/3】ChatSDK加载失败备用按钮 -->
+  <div id="chat-retry-btn">
+    <i class="fa fa-comment-dots"></i>
+  </div>
+
+  <!-- 【新增2/3】引入独立的ChatSDK JS文件 -->
+  <script src="chat-sdk.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const lockAlertModal = document.getElementById('lock-alert-modal');
+      const closeModalBtn = document.getElementById('close-modal');
+      const unlockPuzzleBtn = document.getElementById('unlock-puzzle');
+      const decodingText = document.getElementById('decoding-text');
+      const puzzleContent = document.getElementById('puzzle-content');
+      const backBtn = document.getElementById('back-btn');
+      const apiContent = document.getElementById('api-content');
+      const loadingState = document.getElementById('loading-state');
+      const successState = document.getElementById('success-state');
+      const errorState = document.getElementById('error-state');
+
+      decodingText.classList.add('hidden');
+      puzzleContent.classList.add('hidden');
+
+      function closeModal() {
+        lockAlertModal.classList.add('hidden');
+        decodingText.classList.remove('hidden');
+        setTimeout(() => {
+          decodingText.classList.add('hidden');
+          puzzleContent.classList.remove('hidden');
+          fetchCozeAPI(); // 调用API处理函数
+        }, 3000);
+      }
+
+      closeModalBtn.addEventListener('click', closeModal);
+      unlockPuzzleBtn.addEventListener('click', closeModal);
+
+      backBtn.addEventListener('click', () => {
+        window.location.href = 'mishi.html';
+      });
+
+      // 自定义换行符处理函数：2个\n→普通换行，3个\n→空行
+      function formatLineBreaks(text) {
+        if (!text) return '';
+        // 1. 先处理3个\n（替换为“换行+空行”，即2个<br>）
+        text = text.replace(/\n{3}/g, '<br><br>');
+        // 2. 再处理2个\n（替换为普通换行，即1个<br>）
+        text = text.replace(/\n{2}/g, '<br>');
+        // 3. 最后处理残留的单个\n（统一替换为普通换行，避免遗漏）
+        text = text.replace(/\n/g, '<br>');
+        return text;
+      }
+
+      async function fetchCozeAPI() {
+        const apiUrl = 'https://api.coze.cn/v1/workflow/stream_run';
+        const token = 'sat_ZUvu7vrte22QySxTNgbO2PXp1xo5jJGOF8CaxtclU6NqxKBYZirfGVxdU6ir0Nik';
+        const workflowId = '7559400360063221775';
+        const appId = '7556860834094923830';
+        
+        // 关键修改：从localStorage读取知识点，默认值为“有理数”
+        const inputKnowledge = localStorage.getItem('mathKnowledge') || '有理数'; 
+
+        try {
+            const requestBody = {
+                workflow_id: workflowId,
+                app_id: appId,
+                parameters: {
+                    input: inputKnowledge // 使用读取到的知识点
+                }
+            };
+
+            console.log('🔵 Coze API 请求参数:', requestBody);
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API请求失败，状态码：${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let outputContent = null;
+            let incompleteChunk = '';
+
+            loadingState.classList.remove('hidden');
+            successState.classList.add('hidden');
+            errorState.classList.add('hidden');
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                let chunk = decoder.decode(value, { stream: true });
+                if (incompleteChunk) {
+                    chunk = incompleteChunk + chunk;
+                    incompleteChunk = '';
+                }
+
+                const lines = chunk.split('\n');
+                if (!chunk.endsWith('\n') && lines.length > 0) {
+                    incompleteChunk = lines.pop() || '';
+                }
+
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+
+                    if (trimmed.startsWith('data:')) {
+                        const data = trimmed.substring('data:'.length).trim();
+                        try {
+                            const messageData = JSON.parse(data);
+                            console.log('🔵 解析到的messageData:', messageData);
+                            
+                            // 优先从 messageData.content 中解析 output
+                            if (messageData.content) {
+                                try {
+                                    const contentJson = JSON.parse(messageData.content);
+                                    if (contentJson.output) {
+                                        outputContent = contentJson.output;
+                                        console.log('🔵 从content中解析到output:', outputContent);
+                                        reader.cancel(); // 拿到output后终止读取
+                                        break;
+                                    }
+                                } catch (contentParseErr) {
+                                    console.error('🔴 解析content内的JSON失败:', contentParseErr);
+                                }
+                            }
+                            
+                            // 备用：直接从messageData取output（兼容旧格式）
+                            if (!outputContent && messageData.output) {
+                                outputContent = messageData.output;
+                                console.log('🔵 直接从messageData取到output:', outputContent);
+                                reader.cancel();
+                                break;
+                            }
+                        } catch (err) {
+                            console.error('🔴 解析messageData失败:', err);
+                        }
+                    }
+                }
+                if (outputContent) break; // 已有有效output，退出循环
+            }
+
+            // 处理最后可能的不完整chunk
+            if (incompleteChunk && !outputContent) {
+                if (incompleteChunk.startsWith('data:')) {
+                    const data = incompleteChunk.substring('data:'.length).trim();
+                    try {
+                        const messageData = JSON.parse(data);
+                        console.log('🔵 最后chunk解析的messageData:', messageData);
+                        
+                        if (messageData.content) {
+                            try {
+                                const contentJson = JSON.parse(messageData.content);
+                                if (contentJson.output) {
+                                    outputContent = contentJson.output;
+                                    console.log('🔵 最后chunk从content解析到output:', outputContent);
+                                }
+                            } catch (contentParseErr) {
+                                console.error('🔴 最后chunk解析content内的JSON失败:', contentParseErr);
+                            }
+                        }
+                        
+                        if (!outputContent && messageData.output) {
+                            outputContent = messageData.output;
+                            console.log('🔵 最后chunk直接从messageData取到output:', outputContent);
+                        }
+                    } catch (err) {
+                        console.error('🔴 解析最后数据失败:', err);
+                    }
+                }
+            }
+
+            console.log('🔵 最终要渲染的outputContent:', outputContent);
+            // 渲染结果
+            loadingState.classList.add('hidden');
+            if (outputContent) {
+                // 格式化输出：自定义换行符处理 + 清理首尾引号
+                const formattedOutput = formatLineBreaks(outputContent)
+                    .replace(/^"|"$/g, ''); // 清理首尾引号
+                successState.innerHTML = formattedOutput;
+                successState.classList.remove('hidden');
+            } else {
+                // 兜底内容（动态适配当前知识点）
+                successState.innerHTML = `
+    <p class="text-gray-300 text-sm space-y-2" id="math-content">
+        <div class="flex justify-center">
+            <i class="fa fa-microchip text-xl mb-2 block text-primary"></i>
+        </div>
+        【线索 1：控制台数据屏】三列滚动${inputKnowledge}相关数据，每列4个数字（位置编号①②③④）：<br>
+        第一列：①-5，②3，③-12，④7；<br>
+        第二列：①|-8|，②-2²，③√16，④-3；<br>
+        第三列：①-1/2的倒数，②(-1)²⁰²⁵，③0.25的倒数，④9；<br><br>
+        【线索 2：实验手记·页1】「能量流转需遵循『维度选数法则』：每列各选1个数，且所选数字的**列内位置不可重复**（如第一列选①，第二列不可选①）。」<br><br>
+        【线索 3：实验手记·页2】「选中的3个数，需通过四则运算、乘方（底数/指数为选中数或其运算得到的整数）、绝对值关联，运算需体现『量子级优先级』（至少两种优先级，且涉及正负号转换）。每个数**仅能使用一次**。」<br><br>
+        【线索 4：控制台刻痕】模糊符号注解：「|a|萃取『显性值』，(-b)ⁿ引发『符号涟漪』，规避无意义零循环。」
+    </p>
+`;
+                successState.classList.remove('hidden');
+            }
+
+        } catch (error) {
+            errorState.innerHTML = '实验日志加载失败，请稍后重试';
+            loadingState.classList.add('hidden');
+            errorState.classList.remove('hidden');
+            console.error('🔴 API请求错误：', error);
+        }
+      }
+
+      const submitAnswerBtn = document.getElementById('submit-answer');
+      submitAnswerBtn.addEventListener('click', () => {
+        const answer = document.getElementById('answer-input').value.trim();
+        if (!answer) {
+          alert('请输入密钥数值');
+          return;
+        }
+        if (answer === '24') {
+          // 创建验证成功的提示层
+          const successOverlay = document.createElement('div');
+          successOverlay.className = 'fixed inset-0 flex items-center justify-center z-50 bg-dark/80';
+          successOverlay.innerHTML = `
+            <div class="tech-frame p-8 text-center">
+              <h3 class="text-2xl font-bold text-white text-glow mb-4">密钥验证成功</h3>
+              <p class="text-white mb-6">正在加载关键信息...</p>
+              <div class="flex justify-center">
+                <span class="loading-dot"></span>
+                <span class="loading-dot" style="animation-delay: 0.3s"></span>
+                <span class="loading-dot" style="animation-delay: 1s"></span>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(successOverlay);
+          // 触发页面渐隐动画
+          document.body.classList.add('fade-out');
+          // 动画结束后跳转
+          setTimeout(() => {
+            window.location.href = 'guanjian.html';
+          }, 1000);
+        } else {
+          // 错误处理：输入框抖动
+          const inputEl = document.getElementById('answer-input');
+          inputEl.classList.add('animate-shake');
+          setTimeout(() => {
+            inputEl.classList.remove('animate-shake');
+          }, 500);
+          alert('密钥错误，磁力场波动加剧！请重新计算');
+        }
+      });
+
+      // 【新增3/3】初始化ChatSDK，适配页面主色#165DFF（星际密室统一主色）
+      new FloatingChatSDK({
+        appId: "7551596535822958646",
+        workflowId: "7560369410436513828",
+        token: "sat_ZUvu7vrte22QySxTNgbO2PXp1xo5jJGOF8CaxtclU6NqxKBYZirfGVxdU6ir0Nik",
+        primaryColor: "#165DFF" // 匹配页面primary色，与星际密室其他页面视觉统一
+         
+      });
+    });
+  </script>
+
+</body>
+</html>

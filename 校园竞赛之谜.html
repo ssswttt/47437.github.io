@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学解谜王：校园竞赛之谜</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6', // 蓝色主色调：代表智慧与信任
+                        secondary: '#10B981', // 绿色辅助色：代表成长与希望
+                        accent: '#F59E0B', // 橙色强调色：代表活力与热情
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['"ZCOOL QingKe HuangYou"', 'cursive']
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+            }
+            .puzzle-input:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            }
+            .clue-item {
+                transition: all 0.2s ease;
+            }
+            .clue-item:hover {
+                background-color: rgba(59, 130, 246, 0.05);
+                transform: translateX(5px);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+</head>
+<body class="bg-light text-dark font-sans min-h-screen">
+    <!-- 导航栏 -->
+    <nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-trophy text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-primary">数学解谜王</h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#home" class="hover:text-primary transition-colors">首页</a>
+                <a href="#story" class="hover:text-primary transition-colors">事件</a>
+                <a href="#characters" class="hover:text-primary transition-colors">参与者</a>
+                <a href="#play" class="px-4 py-1 bg-primary text-white rounded-full text-sm hover:bg-primary/90 transition-colors">开始解谜</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-dark text-xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#home" class="py-2 hover:text-primary transition-colors">首页</a>
+                <a href="#story" class="py-2 hover:text-primary transition-colors">事件</a>
+                <a href="#characters" class="py-2 hover:text-primary transition-colors">参与者</a>
+                <a href="#play" class="py-2 hover:text-primary transition-colors">开始解谜</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-primary/5 rounded-l-full -z-10"></div>
+        <div class="absolute bottom-0 left-0 w-1/4 h-1/2 bg-secondary/5 rounded-tr-full -z-10"></div>
+        
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <div class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4 animate-pulse">
+                        初中数学 · 团队解谜游戏
+                    </div>
+                    <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-shadow mb-6">
+                        数学解谜<br>
+                        <span class="text-primary">寻找奖杯</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-lg">
+                        校园数学趣味竞赛的冠军奖杯不见了！它被巧妙地藏了起来，
+                        只有通过团队合作解开一系列数学谜题，才能找到它的位置。
+                        发挥你的数学智慧，一起完成挑战吧！
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#play" class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all transform hover:-translate-y-1">
+                            开始解谜 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#story" class="inline-flex items-center px-6 py-3 bg-white text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all transform hover:-translate-y-1">
+                            了解详情 <i class="fa fa-info-circle ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 relative">
+                    <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                        <img src="https://picsum.photos/600/400?random=1" alt="数学竞赛奖杯" class="w-full h-auto">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                            <span class="text-white text-shadow font-medium">寻找失踪的数学竞赛奖杯...</span>
+                        </div>
+                    </div>
+                    <!-- 装饰性数学符号 -->
+                    <div class="absolute top-1/4 -left-4 text-4xl text-primary/20 rotate-12">π</div>
+                    <div class="absolute bottom-1/3 -right-2 text-3xl text-secondary/20 -rotate-12">√</div>
+                    <div class="absolute top-1/2 right-10 text-2xl text-accent/20 rotate-45">∞</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 事件介绍 -->
+    <section id="story" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+                    事件背景
+                </div>
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4">奖杯之谜</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">一场充满挑战的数学解谜之旅，等待你来完成</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-gray-50 rounded-2xl p-8 shadow-sm relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-1 bg-primary rounded-full mr-3"></div>
+                        <h3 class="text-xl font-bold">事件经过</h3>
+                    </div>
+                    
+                    <p class="mb-6 leading-relaxed">
+                        阳光中学即将举办一年一度的"数学趣味日"活动，作为活动的重要环节，
+                        数学竞赛的冠军奖杯却在活动前一天神秘消失了！学生会主席小李发现，
+                        奖杯并不是被偷走了，而是被数学老师张老师藏了起来，目的是为了增加活动的趣味性。
+                    </p>
+                    
+                    <div class="bg-white p-4 rounded-xl border-l-4 border-accent mb-6 shadow-sm">
+                        <p class="italic text-gray-700">
+                            "真正的数学高手不仅能解题，还能合作与探索。奖杯被藏在校园的某个角落，
+                            解开5个数学谜题，收集全部线索，就能找到它。记住，团队合作才是解开谜题的关键！"
+                        </p>
+                        <p class="text-right text-sm text-gray-500 mt-2">—— 张老师的留言</p>
+                    </div>
+                    
+                    <p class="leading-relaxed">
+                        作为参赛队伍之一，你们的任务是通过解开分布在校园各处的数学谜题，
+                        收集线索，最终找到奖杯的位置。每个谜题都涉及不同的初中数学知识，
+                        包括代数、几何、统计等内容。解题过程中，你们可以互相讨论、分工合作，
+                        体验数学的乐趣和团队协作的力量。
+                    </p>
+                    
+                    <div class="mt-8 flex justify-center">
+                        <a href="#play" class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all">
+                            开始挑战 <i class="fa fa-puzzle-piece ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 角色介绍 -->
+    <section id="characters" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+                    团队成员
+                </div>
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4">你的解谜伙伴</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">每个人都有不同的数学特长，合作才能成功</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                <!-- 角色1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://picsum.photos/400/300?random=10" alt="小明 - 代数高手" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">小明</h3>
+                        <p class="text-gray-600 mb-3">14岁，初二学生</p>
+                        <p class="text-sm text-gray-500 mb-4">
+                            代数和方程方面的天才，擅长解决各种方程式问题，思维敏捷。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">代数高手</span>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">逻辑思维</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 角色2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://picsum.photos/400/300?random=11" alt="小红 - 几何达人" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">小红</h3>
+                        <p class="text-gray-600 mb-3">15岁，初三学生</p>
+                        <p class="text-sm text-gray-500 mb-4">
+                            对几何图形和空间想象特别敏感，能快速解决几何证明题。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">几何达人</span>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">空间想象</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 角色3 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="h-56 overflow-hidden">
+                        <img src="https://picsum.photos/400/300?random=12" alt="小刚 - 统计能手" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">小刚</h3>
+                        <p class="text-gray-600 mb-3">14岁，初二学生</p>
+                        <p class="text-sm text-gray-500 mb-4">
+                            擅长数据分析和概率计算，对数字敏感，能发现数据中的规律。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">统计能手</span>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">数据分析</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 角色4：玩家自己 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover border-2 border-dashed border-primary">
+                    <div class="h-56 overflow-hidden bg-primary/5 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fa fa-user-circle-o text-6xl text-primary/30 mb-2"></i>
+                            <p class="text-primary font-medium">你</p>
+                            <p class="text-sm text-gray-500">解谜领导者</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">队长</h3>
+                        <p class="text-gray-600 mb-3">14-16岁，初中学生</p>
+                        <p class="text-sm text-gray-500 mb-4">
+                            善于组织协调，能发挥团队每个人的优势，做出正确决策。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">团队领导</span>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">综合能力强</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 游戏区域 -->
+    <section id="play" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+                    开始挑战
+                </div>
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4">数学解谜之旅</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">合作解开谜题，收集线索，找到奖杯的位置</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <!-- 游戏进度 -->
+                <div class="mb-10">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">解谜进度</span>
+                        <span class="text-primary font-bold" id="progress-text">0/5</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div id="progress-bar" class="bg-primary h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between mt-1 text-xs text-gray-500">
+                        <span>教室</span>
+                        <span>图书馆</span>
+                        <span>操场</span>
+                        <span>实验室</span>
+                        <span>最终推理</span>
+                    </div>
+                </div>
+
+                <!-- 游戏容器 -->
+                <div class="bg-gray-50 rounded-2xl shadow-md overflow-hidden">
+                    <!-- 游戏开始界面 -->
+                    <div id="game-start" class="p-8 text-center">
+                        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fa fa-trophy text-4xl text-primary"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">准备开始解谜挑战</h3>
+                        <p class="text-gray-600 mb-8 max-w-lg mx-auto">
+                            你们将从教室开始，依次解开分布在校园5个地点的数学谜题。每个谜题解决后，
+                            会获得一个关于奖杯位置的线索。集齐所有线索，就能找到奖杯！
+                        </p>
+                        <button id="start-adventure" class="px-8 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all text-lg transform hover:-translate-y-1">
+                            开始挑战
+                        </button>
+                    </div>
+
+                    <!-- 场景1：教室 -->
+                    <div id="scene-1" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=20" alt="教室场景" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景1：教室</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
+                                <p class="mb-4">在教室里，你们发现了一块黑板，上面用粉笔写着一道题，这是第一个挑战：</p>
+                                
+                                <div class="bg-primary/5 p-4 rounded-lg border-l-4 border-primary mb-6">
+                                    <p class="font-medium mb-2">谜题1：</p>
+                                    <p class="mb-3">正在加载题目内容...</p>
+                                    
+                                    <div class="mt-4">
+                                        <input type="number" id="puzzle-1-answer" class="w-full p-2 border border-gray-300 rounded-lg mb-2 puzzle-input" placeholder="请输入答案">
+                                        <button id="check-puzzle-1" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                            提交答案
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-1-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="scene-1-clue" class="hidden">
+                                    <div class="bg-secondary/10 p-4 rounded-lg border-l-4 border-secondary mb-6">
+                                        <h4 class="font-bold flex items-center mb-2">
+                                            <i class="fa fa-lightbulb-o text-secondary mr-2"></i> 获得线索
+                                        </h4>
+                                        <p>解开谜题后，你们在讲台抽屉里发现了一张纸条："奖杯不在有桌椅的地方，
+                                        它藏在一个充满知识气息的开阔空间。"</p>
+                                        
+                                        <div class="mt-3 flex items-center text-sm">
+                                            <i class="fa fa-check-circle text-secondary mr-2"></i>
+                                            <span class="text-secondary font-medium">已获得线索1/5</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-next="2">
+                                            前往下一个地点 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 场景2：图书馆 -->
+                    <div id="scene-2" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=21" alt="图书馆场景" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景2：图书馆</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
+                                <p class="mb-4">在图书馆的数学书籍区，你们在一本书中发现了一张谜题卡片：</p>
+                                
+                                <div class="bg-primary/5 p-4 rounded-lg border-l-4 border-primary mb-6">
+                                    <p class="font-medium mb-2">谜题2：</p>
+                                    <p class="mb-3">正在加载题目内容...</p>
+                                    
+                                    <div class="mt-4">
+                                        <input type="number" id="puzzle-2-answer" class="w-full p-2 border border-gray-300 rounded-lg mb-2 puzzle-input" placeholder="请输入答案">
+                                        <button id="check-puzzle-2" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                            提交答案
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-2-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="scene-2-clue" class="hidden">
+                                    <div class="bg-secondary/10 p-4 rounded-lg border-l-4 border-secondary mb-6">
+                                        <h4 class="font-bold flex items-center mb-2">
+                                            <i class="fa fa-lightbulb-o text-secondary mr-2"></i> 获得线索
+                                        </h4>
+                                        <p>你们在书架上找到第二张线索纸条："阳光照耀的地方，
+                                        数字与图形在此交汇，奖杯就在它们的见证下。"</p>
+                                        
+                                        <div class="mt-3 flex items-center text-sm">
+                                            <i class="fa fa-check-circle text-secondary mr-2"></i>
+                                            <span class="text-secondary font-medium">已获得线索2/5</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-next="3">
+                                            前往下一个地点 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 场景3：操场 -->
+                    <div id="scene-3" class="hidden">
+                        <!-- 操场场景 - 统计与概率谜题 -->
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=22" alt="操场场景" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景3：操场</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
+                                <p class="mb-4">在操场的记分牌上，你们发现了一个关于运动数据的谜题：</p>
+                                
+                                <div class="bg-primary/5 p-4 rounded-lg border-l-4 border-primary mb-6">
+                                    <p class="font-medium mb-2">谜题3：</p>
+                                    <p class="mb-3">正在加载题目内容...</p>
+                                    
+                                    <div class="mt-4">
+                                        <input type="number" id="puzzle-3-answer" class="w-full p-2 border border-gray-300 rounded-lg mb-2 puzzle-input" placeholder="请输入答案">
+                                        <button id="check-puzzle-3" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                            提交答案
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-3-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="scene-3-clue" class="hidden">
+                                    <div class="bg-secondary/10 p-4 rounded-lg border-l-4 border-secondary mb-6">
+                                        <h4 class="font-bold flex items-center mb-2">
+                                            <i class="fa fa-lightbulb-o text-secondary mr-2"></i> 获得线索
+                                        </h4>
+                                        <p>你们在看台下面找到第三张线索纸条："它不在室外，
+                                        而在一个能进行精确测量的地方。"</p>
+                                        
+                                        <div class="mt-3 flex items-center text-sm">
+                                            <i class="fa fa-check-circle text-secondary mr-2"></i>
+                                            <span class="text-secondary font-medium">已获得线索3/5</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-next="4">
+                                            前往下一个地点 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 场景4：实验室 -->
+                    <div id="scene-4" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=23" alt="实验室场景" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景4：实验室</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
+                                <p class="mb-4">在科学实验室的实验台上，你们发现了一个关于溶液的谜题：</p>
+                                
+                                <div class="bg-primary/5 p-4 rounded-lg border-l-4 border-primary mb-6">
+                                    <p class="font-medium mb-2">谜题4：</p>
+                                    <p class="mb-3">正在加载题目内容...</p>
+                                    
+                                    <div class="mt-4">
+                                        <input type="number" id="puzzle-4-answer" class="w-full p-2 border border-gray-300 rounded-lg mb-2 puzzle-input" placeholder="请输入答案">
+                                        <button id="check-puzzle-4" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                            提交答案
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="puzzle-4-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="scene-4-clue" class="hidden">
+                                    <div class="bg-secondary/10 p-4 rounded-lg border-l-4 border-secondary mb-6">
+                                        <h4 class="font-bold flex items-center mb-2">
+                                            <i class="fa fa-lightbulb-o text-secondary mr-2"></i> 获得线索
+                                        </h4>
+                                        <p>你们在显微镜下发现了第四张线索纸条："它不在地面上，而在一个需要抬头才能看到的地方，
+                                        这个地方的高度是小明身高的3倍（小明身高1.6米）。"</p>
+                                        
+                                        <div class="mt-3 flex items-center text-sm">
+                                            <i class="fa fa-check-circle text-secondary mr-2"></i>
+                                            <span class="text-secondary font-medium">已获得线索4/5</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-next="5">
+                                            前往最终推理 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 场景5：最终推理 -->
+                    <div id="scene-5" class="hidden">
+                        <div class="h-64 md:h-80 overflow-hidden relative">
+                            <img src="https://picsum.photos/800/400?random=24" alt="推理场景" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                                <div class="p-6 text-white">
+                                    <h3 class="text-2xl font-bold mb-1">场景5：最终推理</h3>
+                                    <p>整合线索，找出奖杯位置</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
+                                <p class="mb-6">你们已经收集到了所有线索！现在需要整合这些线索，找出奖杯的藏匿地点。
+                                先回顾一下所有线索，然后回答问题。</p>
+                                
+                                <!-- 线索汇总 -->
+                                <div class="bg-gray-50 p-5 rounded-xl mb-8">
+                                    <h4 class="font-bold text-lg mb-4 flex items-center">
+                                        <i class="fa fa-list-alt text-primary mr-2"></i> 线索汇总
+                                    </h4>
+                                    <ul class="space-y-3">
+                                        <li class="clue-item p-3 bg-white rounded-lg border-l-2 border-primary">
+                                            <span class="font-medium">线索1：</span>
+                                            <span>奖杯不在有桌椅的地方，它藏在一个充满知识气息的开阔空间。</span>
+                                        </li>
+                                        <li class="clue-item p-3 bg-white rounded-lg border-l-2 border-primary">
+                                            <span class="font-medium">线索2：</span>
+                                            <span>阳光照耀的地方，数字与图形在此交汇，奖杯就在它们的见证下。</span>
+                                        </li>
+                                        <li class="clue-item p-3 bg-white rounded-lg border-l-2 border-primary">
+                                            <span class="font-medium">线索3：</span>
+                                            <span>它不在室外，而在一个能进行精确测量的地方。</span>
+                                        </li>
+                                        <li class="clue-item p-3 bg-white rounded-lg border-l-2 border-primary">
+                                            <span class="font-medium">线索4：</span>
+                                            <span>它不在地面上，而在一个需要抬头才能看到的地方，这个地方的高度是小明身高的3倍（小明身高1.6米）。</span>
+                                        </li>
+                                        <li class="clue-item p-3 bg-white rounded-lg border-l-2 border-primary">
+                                            <span class="font-medium">线索5：</span>
+                                            <span>最后一个数学提示：这个地点的面积是一个长方形，长2米，宽3米。</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- 最终谜题 -->
+                                <div class="bg-primary/5 p-4 rounded-lg border-l-4 border-primary mb-6">
+                                    <p class="font-medium mb-2">最终问题：奖杯藏在哪里？</p>
+                                    <p class="mb-4">根据以上线索，请推测奖杯的具体位置：</p>
+                                    
+                                    <div class="mt-4 space-y-3">
+                                        <div class="flex items-center">
+                                            <input type="radio" id="location-1" name="location" value="1" class="mr-2">
+                                            <label for="location-1">图书馆的书架顶部</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="radio" id="location-2" name="location" value="2" class="mr-2">
+                                            <label for="location-2">科学实验室的储物柜里</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="radio" id="location-3" name="location" value="3" class="mr-2">
+                                            <label for="location-3">学校大厅的数学公示板上方</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="radio" id="location-4" name="location" value="4" class="mr-2">
+                                            <label for="location-4">教师办公室的文件柜里</label>
+                                        </div>
+                                        
+                                        <button id="check-location" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                            提交答案
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="location-feedback" class="hidden p-4 rounded-lg mb-4"></div>
+                                
+                                <div id="final-clue" class="hidden">
+                                    <div class="mt-6">
+                                        <button class="next-scene-btn w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-next="6">
+                                            查看结局 <i class="fa fa-arrow-right ml-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 胜利场景 -->
+                    <div id="victory" class="hidden p-8 text-center">
+                        <div class="w-32 h-32 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fa fa-trophy text-5xl text-accent"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4">恭喜你们找到奖杯！</h3>
+                        <p class="text-gray-600 mb-8 max-w-lg mx-auto">
+                            通过团队合作和数学智慧，你们成功解开了所有谜题！根据线索推理：
+                        </p>
+                        
+                        <div class="bg-gray-100 p-6 rounded-xl max-w-2xl mx-auto mb-8 text-left">
+                            <h4 class="font-bold mb-4 text-center">推理过程</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                    <span><strong>线索1</strong>排除了教室和办公室（有桌椅），指向开阔且有知识气息的地方</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                    <span><strong>线索2</strong>表明是有阳光且与数学相关的地方（数字与图形）</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                    <span><strong>线索3</strong>排除了操场（室外），指向可测量的室内空间</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                    <span><strong>线索4</strong>说明位置在高处（1.6米×3=4.8米）</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                    <span><strong>线索5</strong>提示面积3平方米（2×3×sin30°）</span>
+                                </li>
+                                <li class="flex items-start font-medium mt-4">
+                                    <i class="fa fa-lightbulb-o text-accent mt-1 mr-2"></i>
+                                    <span>综合所有线索，奖杯藏在<strong>学校大厅的数学公示板上方</strong>！这里是展示数学成果的地方（数字与图形），面积3平方米，有阳光照射，高度约4.8米，符合所有条件。</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-primary/10 p-6 rounded-xl max-w-md mx-auto mb-8">
+                            <h4 class="font-bold mb-3 text-primary">张老师的话</h4>
+                            <p class="text-gray-700 italic">
+                                "恭喜你们成功找到奖杯！这个游戏不仅考验了你们的数学知识，
+                                更重要的是培养了你们的团队合作和逻辑推理能力。记住，
+                                数学不仅仅是课本上的公式，更是解决实际问题的工具。希望你们
+                                继续保持这份探索精神，在数学的世界里发现更多乐趣！"
+                            </p>
+                        </div>
+                        
+                        <button id="play-again" class="px-8 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary/90 transition-all text-lg">
+                            再次挑战 <i class="fa fa-refresh ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 初始化时隐藏默认题目，显示加载状态
+            initializeQuestionLoading();
+            
+            // 修复：调用正确的函数名
+            fetchQuestionsFromAPI();
+        });
+
+        // 初始化题目加载状态
+        function initializeQuestionLoading() {
+            // 隐藏默认题目内容
+            const questionElements = document.querySelectorAll('.puzzle-card p:nth-of-type(2)');
+            const analysisElements = document.querySelectorAll('.puzzle-card p:nth-of-type(3)');
+            
+            // 清空内容并设置加载状态
+            [...questionElements, ...analysisElements].forEach(element => {
+                element.textContent = '';
+                element.style.color = '#999';
+            });
+            
+            // 为每个问题区域设置加载提示
+            questionElements.forEach((element, index) => {
+                element.textContent = `正在加载题目 ${index + 1}...`;
+            });
+        }
+        
+        // 从API获取题目数据 - 优化SSE解析，支持标准格式
+        async function fetchQuestionsFromAPI() {
+            try {
+                const workflow_id = "7560950661031591970";
+                const app_id = "7560896842750918671";
+                const pat = "sat_ZUvu7vrte22QySxTNgbO2PXp1xo5jJGOF8CaxtclU6NqxKBYZirfGVxdU6ir0Nik";
+                const apiUrl = "https://api.coze.cn/v1/workflow/stream_run";
+                
+                console.log('开始调用API获取题目数据...');
+                 // 关键修改：从localStorage读取知识点，默认值为“有理数”
+        const inputKnowledge = localStorage.getItem('mathKnowledge') || '有理数'; 
+
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${pat}`
+                    },
+                    body: JSON.stringify({
+                        workflow_id: workflow_id,
+                        app_id: app_id,
+                        parameters: {
+                            input: inputKnowledge
+                        }
+                    })
+                });
+                
+                console.log('API响应状态:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API错误响应:', errorText);
+                    throw new Error(`API请求失败: HTTP ${response.status}. 响应: ${errorText.substring(0, 200)}`);
+                }
+                
+                // 获取响应文本
+                const responseText = await response.text();
+                console.log('API返回的原始内容:', responseText);
+                
+                // 解析SSE格式的数据
+                let questionData;
+                try {
+                    // 提取所有data字段中的JSON数据
+                    const dataMatches = responseText.match(/data:\s*({.*?})(?=\s*(?:id:|event:|$))/gs);
+                    
+                    if (dataMatches && dataMatches.length > 0) {
+                        let outputArray = null;
+                        
+                        // 遍历所有data字段，寻找包含题目数据的数组
+                        for (const match of dataMatches) {
+                            const jsonStr = match.replace(/data:\s*/, '');
+                            try {
+                                const parsed = JSON.parse(jsonStr);
+                                console.log('解析到的SSE数据块:', parsed);
+                                
+                                // 检查content字段
+                                if (parsed.content) {
+                                    try {
+                                        // 尝试直接解析content
+                                        const contentData = typeof parsed.content === 'string' ? JSON.parse(parsed.content) : parsed.content;
+                                        
+                                        // 尝试多种可能的数据路径
+                                        if (contentData.output && Array.isArray(contentData.output) && contentData.output.length >= 4) {
+                                            outputArray = contentData.output;
+                                            break;
+                                        }
+                                        // 检查content是否直接是数组
+                                        else if (Array.isArray(contentData) && contentData.length >= 4) {
+                                            outputArray = contentData;
+                                            break;
+                                        }
+                                    } catch (e) {
+                                        console.log('content解析失败:', e);
+                                    }
+                                }
+                                
+                                // 检查是否有直接的output数组
+                                 if (parsed.output && Array.isArray(parsed.output) && parsed.output.length >= 4) {
+                                    outputArray = parsed.output;
+                                    break;
+                                }
+                                
+                                // 检查parsed本身是否是数组
+                                if (Array.isArray(parsed) && parsed.length >= 4) {
+                                    outputArray = parsed;
+                                    break;
+                                }
+                            } catch (e) {
+                                console.log('单个数据块解析失败:', e);
+                            }
+                        }
+                        
+                        // 尝试提取任意数组数据
+                        if (!outputArray) {
+                            console.log('尝试从响应中提取任意数组数据...');
+                            try {
+                                // 如果整个响应是JSON格式
+                                const fullResponse = JSON.parse(responseText);
+                                if (fullResponse && Array.isArray(fullResponse) && fullResponse.length >= 4) {
+                                    outputArray = fullResponse;
+                                } else if (fullResponse && typeof fullResponse === 'object') {
+                                    // 遍历对象查找数组
+                                    for (const key in fullResponse) {
+                                        if (Array.isArray(fullResponse[key]) && fullResponse[key].length >= 4) {
+                                            outputArray = fullResponse[key];
+                                            break;
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                console.log('完整响应解析为JSON失败:', e);
+                            }
+                        }
+
+                        if (outputArray && Array.isArray(outputArray)) {
+                            questionData = outputArray;
+                            console.log('成功提取到题目数据:', questionData);
+                        } else {
+                            throw new Error('未找到有效的题目数据数组');
+                        }
+                    } else {
+                        // 如果没有data字段，尝试直接解析整个响应
+                        try {
+                            const fullResponse = JSON.parse(responseText);
+                            if (Array.isArray(fullResponse) && fullResponse.length >= 4) {
+                                questionData = fullResponse;
+                                console.log('直接解析响应获取到题目数据:', questionData);
+                            } else {
+                                throw new Error('未找到任何data字段且响应不是有效数组');
+                            }
+                        } catch (e) {
+                            throw new Error('未找到任何data字段且无法解析响应');
+                        }
+                    }
+                } catch (parseError) {
+                    console.error('SSE解析失败:', parseError);
+                    throw parseError; // 重新抛出错误
+                }
+                
+                // 验证数据格式
+                if (!Array.isArray(questionData)) {
+                    throw new Error('API返回的数据格式不符合预期，不是数组');
+                }
+                
+                if (questionData.length < 8) {
+                    throw new Error(`API返回的数据不完整，需要至少6个元素，但实际收到${questionData.length}个元素`);
+                }
+                
+                // 更新页面显示
+                updateQuestions(questionData);
+                console.log('题目数据加载成功，数据格式：[题目1, 解析1, 题目2, 解析2, 题目3, 解析3, 题目4, 解析4]');
+                
+            } catch (error) {
+                console.error('加载题目数据失败:', error);
+                
+                let errorMessage = '题目加载失败';
+                if (error.message.includes('ERR_NAME_NOT_RESOLVED')) {
+                    errorMessage = '无法连接到API服务器，请检查URL是否正确';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = '网络连接失败，请检查您的网络设置';
+                } else {
+                    errorMessage += ': ' + error.message;
+                }
+                
+                displayError(errorMessage);
+                provideRetryOption();
+            }
+        }
+
+        // 更新页面上的题目内容
+        function updateQuestions(questionData) {
+            console.log('updateQuestions被调用，数据长度:', questionData.length);
+            console.log('题目数据内容:', questionData);
+            
+            // 场景1 - 教室
+            console.log('更新场景1，题目内容:', questionData[0], '解析内容:', questionData[1]);
+            updateQuestionElement('#scene-1', questionData[0], questionData[1]);
+            
+            // 场景2 - 图书馆
+            console.log('更新场景2，题目内容:', questionData[2], '解析内容:', questionData[3]);
+            updateQuestionElement('#scene-2', questionData[2], questionData[3]);
+            
+            // 场景3 - 操场
+            console.log('更新场景3，题目内容:', questionData[4], '解析内容:', questionData[5]);
+            updateQuestionElement('#scene-3', questionData[4], questionData[5]);
+
+            // 场景4 - 实验室
+            console.log('更新场景4，题目内容:', questionData[6], '解析内容:', questionData[7]);
+            updateQuestionElement('#scene-4', questionData[6], questionData[7]);
+
+            // // 更新夜班总结的解析内容
+            // updateNightShiftSummary(questionData);
+        }
+        
+        // 更新单个问题区域的内容
+        function updateQuestionElement(sceneSelector, questionContent, analysisContent) {
+            console.log(`更新${sceneSelector}：题目内容="${questionContent}"`);
+            
+            // 查找题目内容p元素（显示"正在加载题目内容..."的那个）
+            const existingPElement = document.querySelector(`${sceneSelector} .bg-primary\\/5 p:nth-of-type(2)`);
+            
+            if (existingPElement) {
+                console.log(`找到现有p元素，更新题目内容: "${questionContent}"`);
+                // 更新现有p元素的内容
+                existingPElement.textContent = questionContent;
+                existingPElement.style.color = '#333';
+                
+                // 存储解析内容到data属性，供答案验证时使用
+                existingPElement.setAttribute('data-analysis', analysisContent);
+                
+                // 添加调试样式
+                existingPElement.style.backgroundColor = '#ffffcc';
+                setTimeout(() => {
+                    existingPElement.style.backgroundColor = '';
+                }, 1000);
+                
+                console.log(`成功更新题目内容`);
+            } else {
+                console.error(`未找到现有p元素在: ${sceneSelector} .bg-primary\\/5 p:nth-of-type(2)`);
+                // 尝试查找所有p元素作为备用
+                const allPElements = document.querySelectorAll(`${sceneSelector} .bg-primary\\/5 p`);
+                console.log(`${sceneSelector} .bg-primary\\/5 中找到 ${allPElements.length} 个p元素`);
+                allPElements.forEach((p, index) => {
+                    console.log(`p元素${index + 1}: "${p.textContent.substring(0, 50)}..."`);
+                });
+            }
+        }
+        
+        // 获取题目解析内容
+        function getAnalysisContent(sceneId) {
+            const questionElement = document.querySelector(`#scene-${sceneId} .bg-primary\\/5 p:nth-of-type(2)`);
+            return questionElement ? questionElement.getAttribute('data-analysis') : '';
+        }
+
+        // 显示错误信息
+        function displayError(message) {
+        const questionElements = document.querySelectorAll('.puzzle-card p:nth-of-type(2)');
+        
+        // 为第一个问题显示错误信息，其他问题保持加载状态
+        if (questionElements.length > 0) {
+        questionElements[0].textContent = message;
+        questionElements[0].style.color = '#ff0000';
+        }
+        
+        // 添加错误通知
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-20 right-20 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // 3秒后自动移除通知
+        setTimeout(() => {
+        notification.remove();
+        }, 3000);
+        }
+        
+        // 提供重试选项
+        function provideRetryOption() {
+        // 检查是否已存在重试按钮
+        if (document.querySelector('#retry-button')) {
+        return;
+        }
+        
+        const retryButton = document.createElement('button');
+        retryButton.id = 'retry-button';
+        retryButton.className = 'fixed bottom-10 right-10 bg-primary text-white px-6 py-3 rounded-lg shadow-lg z-50 hover:bg-primary/90 transition-colors';
+        retryButton.textContent = '重试加载题目';
+        
+        retryButton.addEventListener('click', function() {
+        // 重置状态
+        initializeQuestionLoading();
+        
+        // 修复：调用正确的函数名
+        fetchQuestionsFromAPI();
+        });
+        
+        document.body.appendChild(retryButton);
+        }
+
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 游戏逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取元素
+            const startBtn = document.getElementById('start-adventure');
+            const gameStart = document.getElementById('game-start');
+            const scenes = {
+                1: document.getElementById('scene-1'),
+                2: document.getElementById('scene-2'),
+                3: document.getElementById('scene-3'),
+                4: document.getElementById('scene-4'),
+                5: document.getElementById('scene-5'),
+                victory: document.getElementById('victory')
+            };
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const playAgainBtn = document.getElementById('play-again');
+            
+            // 答案验证
+            const correctAnswers = {
+                1: 13,   
+                2: 3,    
+                3: 86,  
+                4: 40,    
+                location: 3 
+            };
+            
+            // 开始游戏
+            startBtn.addEventListener('click', function() {
+                gameStart.classList.add('hidden');
+                scenes[1].classList.remove('hidden');
+                scenes[1].classList.add('animate-fadeIn');
+                updateProgress(1);
+            });
+            
+            // 验证谜题1答案（使用getAnalysisContent函数）
+            document.getElementById('check-puzzle-1').addEventListener('click', function() {
+                const answer = parseFloat(document.getElementById('puzzle-1-answer').value);
+                const feedback = document.getElementById('puzzle-1-feedback');
+                
+                if (answer === correctAnswers[1]) {
+                    // 使用getAnalysisContent函数获取解析内容
+                    const analysisContent = getAnalysisContent(1);
+                    
+                    feedback.textContent = '恭喜！答案正确！解析：' + (analysisContent || '题目解析加载中...');
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                    document.getElementById('scene-1-clue').classList.remove('hidden');
+                } else {
+                    feedback.textContent = '答案不正确，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+            
+            // 验证谜题2答案（使用getAnalysisContent函数）
+            document.getElementById('check-puzzle-2').addEventListener('click', function() {
+                const answer = parseFloat(document.getElementById('puzzle-2-answer').value);
+                const feedback = document.getElementById('puzzle-2-feedback');
+                
+                if (Math.abs(answer - correctAnswers[2]) < 0.1) {
+                    // 使用getAnalysisContent函数获取解析内容
+                    const analysisContent = getAnalysisContent(2);
+                    
+                    feedback.textContent = '恭喜！答案正确！解析：' + (analysisContent || '题目解析加载中...');
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                    document.getElementById('scene-2-clue').classList.remove('hidden');
+                } else {
+                    feedback.textContent = '答案不正确，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+            
+            // 验证谜题3答案（使用getAnalysisContent函数）
+            document.getElementById('check-puzzle-3').addEventListener('click', function() {
+                const answer = parseFloat(document.getElementById('puzzle-3-answer').value);
+                const feedback = document.getElementById('puzzle-3-feedback');
+                
+                if (Math.abs(answer - correctAnswers[3]) < 0.1) {
+                    // 使用getAnalysisContent函数获取解析内容
+                    const analysisContent = getAnalysisContent(3);
+                    
+                    feedback.textContent = '恭喜！答案正确！解析：' + (analysisContent || '题目解析加载中...');
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                    document.getElementById('scene-3-clue').classList.remove('hidden');
+                } else {
+                    feedback.textContent = '答案不正确，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+            
+            // 验证谜题4答案（使用getAnalysisContent函数）
+            document.getElementById('check-puzzle-4').addEventListener('click', function() {
+                const answer = parseFloat(document.getElementById('puzzle-4-answer').value);
+                const feedback = document.getElementById('puzzle-4-feedback');
+                
+                if (answer === correctAnswers[4]) {
+                     // 使用getAnalysisContent函数获取解析内容
+                    const analysisContent = getAnalysisContent(4);
+                    
+                    feedback.textContent = '恭喜！答案正确！解析：' + (analysisContent || '题目解析加载中...');
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                    document.getElementById('scene-4-clue').classList.remove('hidden');
+                } else {
+                    feedback.textContent = '答案不正确，请再试一次。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+            
+            // 验证最终位置
+            document.getElementById('check-location').addEventListener('click', function() {
+                const selectedLocation = document.querySelector('input[name="location"]:checked');
+                const feedback = document.getElementById('location-feedback');
+                
+                if (!selectedLocation) {
+                    feedback.textContent = '请选择一个地点';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-yellow-100 text-yellow-800';
+                    feedback.classList.remove('hidden');
+                    return;
+                }
+                
+                if (parseInt(selectedLocation.value) === correctAnswers.location) {
+                    feedback.textContent = '恭喜！你的推理正确！现在让我们看看完整的推理过程和结局。';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-800';
+                    document.getElementById('final-clue').classList.remove('hidden');
+                } else {
+                    feedback.textContent = '推理不正确，请再仔细分析线索。提示：结合"数字与图形交汇"和"高度4.8米"这两个关键信息';
+                    feedback.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-800';
+                }
+                
+                feedback.classList.remove('hidden');
+            });
+            
+            // 下一场景按钮
+            document.querySelectorAll('.next-scene-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const currentScene = parseInt(this.closest('[id^="scene-"]').id.split('-')[1]);
+                    const nextScene = parseInt(this.getAttribute('data-next'));
+                    
+                    // 添加过渡动画
+                    scenes[currentScene].classList.add('opacity-0');
+                    setTimeout(() => {
+                        scenes[currentScene].classList.add('hidden');
+                        scenes[currentScene].classList.remove('opacity-0');
+                    
+                        // 如果是最后一个场景，显示胜利界面
+                        if (nextScene > Object.keys(scenes).length - 1) {
+                            scenes.victory.classList.remove('hidden');
+                            scenes.victory.classList.add('animate-fadeIn');
+                            updateProgress(5);
+                        } else {
+                            scenes[nextScene].classList.remove('hidden');
+                            scenes[nextScene].classList.add('animate-fadeIn');
+                            updateProgress(nextScene);
+                        }
+                     }, 300);
+                });
+            });
+            
+           // 重新开始
+            playAgainBtn.addEventListener('click', function() {
+                // 添加过渡动画
+                scenes.victory.classList.add('opacity-0');
+                setTimeout(() => {
+                    scenes.victory.classList.add('hidden');
+                    scenes.victory.classList.remove('opacity-0', 'animate-fadeIn');
+                    gameStart.classList.remove('hidden');
+                    resetPuzzles();
+                    updateProgress(0);
+                }, 300);
+            });
+            
+            // 更新进度
+            function updateProgress(level) {
+                const percentage = (level / 4) * 100;
+                // 使用动画效果更新进度条
+                setTimeout(() => {
+                    progressBar.style.width = `${percentage}%`;
+                }, 100);
+                progressText.textContent = `${level}/4`;
+            }
+            
+            // 重置谜题状态
+            function resetPuzzles() {
+                // 重置所有谜题输入和反馈
+                document.querySelectorAll('[id^="puzzle-"][id$="-answer"]').forEach(input => {
+                    input.value = '';
+                });
+                
+                document.querySelectorAll('[id^="puzzle-"][id$="-feedback"]').forEach(feedback => {
+                    feedback.classList.add('hidden');
+                    feedback.classList.remove('animate-pulse');
+                });
+                
+                document.querySelectorAll('[id^="scene-"][id$="-clue"]').forEach(clue => {
+                    clue.classList.add('hidden');
+                    clue.classList.remove('animate-fadeIn');
+                });
+                
+                // 隐藏所有场景
+                Object.values(scenes).forEach(scene => {
+                    scene.classList.add('hidden');
+                    scene.classList.remove('animate-fadeIn', 'opacity-0');
+                });
+            }
+        });
+    </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body>
+</html>
